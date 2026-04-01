@@ -117,28 +117,28 @@ export function ListDetail() {
     : window.location.href;
 
   return (
-    <div className="min-h-screen bg-background pb-24">
+    <div className="min-h-screen bg-background pb-40">
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
         {/* Header */}
-        <div className="bg-gradient-to-br from-primary/10 via-secondary/10 to-accent/10 px-6 pt-8 pb-8 rounded-b-[3rem] sticky top-0 z-10 backdrop-blur-lg">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-            <div className="flex items-center gap-4">
+        <div className="bg-gradient-to-br from-primary/10 via-secondary/10 to-accent/10 px-4 sm:px-6 pt-6 sm:pt-8 pb-4 sm:pb-6 rounded-b-[2rem] sm:rounded-b-[3rem] sticky top-0 z-10 backdrop-blur-lg mb-6">
+          <div className="flex flex-row items-center justify-between gap-2 mb-0">
+            <div className="flex items-center gap-2 sm:gap-4 flex-1 min-w-0">
               <motion.button
                 onClick={() => navigate("/")}
-                className="p-2 hover:bg-white/50 rounded-full transition-colors shrink-0"
+                className="p-2 bg-white/50 hover:bg-white/80 rounded-full transition-colors shrink-0"
                 whileTap={{ scale: 0.9 }}
               >
-                <ChevronLeft className="w-6 h-6" />
+                <ChevronLeft className="w-5 h-5" />
               </motion.button>
-
-              <div className="min-w-0">
-                <h2 className="mb-0 truncate">{`${list.title} ${list.emoji ?? ""}`.trim()}</h2>
-                <p className="text-sm text-muted-foreground truncate">{categoryLabel}</p>
+              
+              <div className="min-w-0 flex-1 flex flex-col justify-center">
+                <h2 className="mb-0 text-xl sm:text-2xl font-bold truncate block w-full">{`${list.title} ${list.emoji ?? ""}`.trim()}</h2>
+                <p className="text-sm sm:text-base text-muted-foreground truncate block w-full leading-snug">{categoryLabel}</p>
               </div>
             </div>
 
-            <div className="flex items-center gap-2 sm:gap-4 overflow-x-auto pb-2 sm:pb-0 hide-scrollbar">
-              <div className="flex items-center gap-2 text-sm">
+            <div className="flex flex-row items-center gap-1 sm:gap-2 shrink-0">
+              <div className="flex items-center gap-1 sm:gap-2 text-[10px] sm:text-xs text-nowrap">
                 <span className="px-3 py-1 bg-primary/20 text-primary rounded-full">
                   {completedCount}/{totalCount} done
                 </span>
@@ -222,63 +222,7 @@ export function ListDetail() {
           </aside>
 
           <main className="lg:col-span-2 px-2">
-            {/* Add Item Section */}
-            <div className="px-6 mt-6">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="bg-white rounded-3xl p-4 shadow-md mb-6"
-              >
-                <div className="space-y-3">
-                  <input
-                    type="text"
-                    value={newItemName}
-                    onChange={(e) => setNewItemName(e.target.value)}
-                    placeholder="Add item..."
-                    className="w-full px-4 py-3 rounded-2xl bg-input-background border-0 focus:ring-2 focus:ring-primary outline-none transition-all"
-                    onKeyDown={(e) => e.key === "Enter" && handleAddItem()}
-                  />
-
-                  <div className="flex flex-wrap sm:flex-nowrap gap-3">
-                    <input
-                      type="text"
-                      value={newItemQuantity}
-                      onChange={(e) => setNewItemQuantity(e.target.value)}
-                      placeholder="Qty"
-                      className="w-20 sm:w-24 px-4 py-3 rounded-2xl bg-input-background border-0 focus:ring-2 focus:ring-primary outline-none transition-all"
-                      onKeyDown={(e) => e.key === "Enter" && handleAddItem()}
-                    />
-
-                    <select
-                      value={newItemUnit}
-                      onChange={(e) => setNewItemUnit(e.target.value as Unit)}
-                      className="flex-1 px-4 py-3 rounded-2xl bg-input-background border-0 focus:ring-2 focus:ring-primary outline-none transition-all"
-                    >
-                      {unitOptions.map((unit) => (
-                        <option key={unit} value={unit}>
-                          {unit}
-                        </option>
-                      ))}
-                    </select>
-
-                    <motion.button
-                      onClick={handleAddItem}
-                      disabled={!newItemName.trim()}
-                      className={`
-                    px-6 py-3 rounded-2xl font-semibold transition-all flex items-center gap-2
-                    ${newItemName.trim()
-                          ? "bg-primary text-primary-foreground"
-                          : "bg-muted text-muted-foreground cursor-not-allowed"
-                        }
-                  `}
-                      whileTap={newItemName.trim() ? { scale: 0.95 } : {}}
-                    >
-                      <Plus className="w-5 h-5" />
-                    </motion.button>
-                  </div>
-                </div>
-              </motion.div>
-
+            <div className="px-2 mt-6">
               {/* Items List */}
               <div className="space-y-2">
                 {sortedItems.map((item) => (
@@ -311,6 +255,71 @@ export function ListDetail() {
               </div>
             </div>
           </main>
+        </div>
+      </div>
+
+      {/* Fixed Bottom Add Item Bar */}
+      <div className="fixed bottom-0 left-0 right-0 p-3 sm:p-6 pb-5 sm:pb-8 bg-gradient-to-t from-background via-background to-transparent pointer-events-none z-40">
+        <div className="max-w-3xl mx-auto pointer-events-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-white dark:bg-card border-2 border-primary/30 focus-within:border-primary shadow-[0_8px_30px_rgb(0,0,0,0.08)] rounded-[2rem] p-1.5 flex items-center transition-colors"
+          >
+            <input
+              type="text"
+              value={newItemName}
+              onChange={(e) => setNewItemName(e.target.value)}
+              placeholder="Item Description..."
+              className="w-full flex-1 px-3 sm:px-4 py-2.5 bg-transparent border-0 outline-none min-w-[80px] text-sm sm:text-base font-medium placeholder:text-muted-foreground/60"
+              onKeyDown={(e) => e.key === "Enter" && handleAddItem()}
+            />
+            
+            <div className="w-px h-6 bg-border/50 mx-1 hidden sm:block shrink-0"></div>
+
+            <input
+              type="text"
+              value={newItemQuantity}
+              onChange={(e) => setNewItemQuantity(e.target.value)}
+              placeholder="Qty"
+              className="w-12 sm:w-16 px-1 sm:px-2 py-2.5 bg-transparent border-0 outline-none text-center text-sm sm:text-base font-medium placeholder:text-muted-foreground/60"
+              onKeyDown={(e) => e.key === "Enter" && handleAddItem()}
+            />
+            
+            <div className="relative w-16 sm:w-24 shrink-0">
+              <select
+                value={newItemUnit}
+                onChange={(e) => setNewItemUnit(e.target.value as Unit)}
+                className="w-full py-2.5 pl-1 pr-5 sm:px-2 bg-transparent border-0 outline-none appearance-none cursor-pointer text-sm sm:text-base font-medium text-muted-foreground"
+              >
+                {unitOptions.map((unit) => (
+                  <option key={unit} value={unit}>
+                    {unit}
+                  </option>
+                ))}
+              </select>
+              <div className="absolute right-1 sm:right-2 top-1/2 -translate-y-1/2 pointer-events-none">
+                <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-muted-foreground/70" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </div>
+            </div>
+
+            <motion.button
+              onClick={handleAddItem}
+              disabled={!newItemName.trim()}
+              className={`
+                w-10 h-10 sm:w-11 sm:h-11 flex items-center justify-center shrink-0 rounded-[1.25rem] transition-all ml-1
+                ${newItemName.trim()
+                  ? "bg-primary text-primary-foreground shadow-sm"
+                  : "bg-muted/50 text-muted-foreground cursor-not-allowed"
+                }
+              `}
+              whileTap={newItemName.trim() ? { scale: 0.95 } : {}}
+            >
+              <Plus className="w-5 h-5" strokeWidth={2.5} />
+            </motion.button>
+          </motion.div>
         </div>
       </div>
 

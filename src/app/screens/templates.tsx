@@ -44,18 +44,18 @@ export function Templates() {
       {/* Responsive container for desktop */}
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
         {/* Header */}
-        <div className="bg-gradient-to-br from-primary/10 via-secondary/10 to-accent/10 px-6 pt-8 pb-8 rounded-b-[3rem] sticky top-0 z-10">
-          <div className="flex items-center gap-4 mb-4">
+        <div className="bg-gradient-to-br from-primary/10 via-secondary/10 to-accent/10 px-6 pt-6 sm:pt-8 pb-6 rounded-b-[2rem] sm:rounded-b-[3rem] sticky top-0 z-10 backdrop-blur-lg mb-6">
+          <div className="flex items-center gap-4 mb-1">
             <motion.button
               onClick={() => navigate("/")}
-              className="p-2 hover:bg-white/50 rounded-full transition-colors"
+              className="p-2 bg-white/50 hover:bg-white/80 rounded-full transition-colors flex-shrink-0"
               whileTap={{ scale: 0.9 }}
             >
-              <ChevronLeft className="w-6 h-6" />
+              <ChevronLeft className="w-5 h-5" />
             </motion.button>
-            <h2>Templates</h2>
+            <h2 className="text-xl sm:text-2xl font-bold mb-0">Templates</h2>
           </div>
-          <p className="text-muted-foreground">
+          <p className="text-muted-foreground text-sm sm:text-base ml-12 sm:ml-14">
             Start with a ready-made list template
           </p>
         </div>
