@@ -45,13 +45,16 @@ export function Dashboard() {
     <div className="min-h-screen bg-background pb-32">
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
         {/* Header */}
-        <div className="bg-gradient-to-br from-primary/10 via-secondary/10 to-accent/10 px-6 pt-8 pb-20 rounded-b-[3rem]">
+        <div className="bg-gradient-to-br from-primary/10 via-secondary/10 to-accent/10 px-6 pt-8 pb-20 rounded-b-[3rem] sticky top-0 z-10">
           <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
+            className="flex items-start justify-between"
           >
-            <h1 className="mb-2">Hey Smita 👋</h1>
-            <p className="text-muted-foreground">Let's get things done today!</p>
+            <div>
+              <h1 className="mb-2 text-3xl sm:text-4xl">Hey Smita 👋</h1>
+              <p className="text-muted-foreground">Let's get things done today!</p>
+            </div>
           </motion.div>
         </div>
 
@@ -86,33 +89,28 @@ export function Dashboard() {
         </div>
       </div>
 
-      {/* FloatingActionButton: hidden on large screens where fixed bottom bar appears */}
-      <div className="lg:hidden">
-        <FloatingActionButton onClick={() => setIsCreateModalOpen(true)} label="Create new list" />
-      </div>
-
-      {/* Fixed bottom bar for laptop/desktop */}
-      <div className="hidden lg:flex fixed bottom-6 left-1/2 transform -translate-x-1/2 w-[min(1100px,calc(100%_-_4rem))] items-center justify-between p-4 gap-4 bg-card rounded-3xl shadow-lg z-50">
+      {/* Fixed bottom navigation bar */}
+      <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 w-[calc(100%_-_3rem)] sm:w-[calc(100%_-_4rem)] max-w-5xl flex items-center p-2 sm:p-4 gap-2 sm:gap-4 bg-card/95 backdrop-blur-md rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] z-50 border border-black/5">
         <motion.button
           onClick={() => navigate("/templates")}
-          className="py-3 px-4 rounded-2xl bg-white border-2 border-dashed border-muted-foreground/30 text-muted-foreground hover:border-primary hover:text-primary transition-all flex items-center gap-2"
+          className="flex-1 py-3 px-2 sm:px-4 rounded-2xl bg-muted/30 sm:bg-white border-2 border-transparent sm:border-dashed sm:border-muted-foreground/30 text-muted-foreground hover:text-primary transition-all flex items-center justify-center gap-2"
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
         >
-          <FileText className="w-5 h-5" />
-          Browse Templates
+          <FileText className="w-5 h-5 shrink-0" />
+          <span className="font-medium text-sm sm:text-base whitespace-nowrap">Browse Templates</span>
         </motion.button>
 
         <motion.button
           onClick={() => setIsCreateModalOpen(true)}
-          className="py-3 px-4 rounded-2xl bg-primary text-primary-foreground shadow-md flex items-center gap-2"
+          className="flex-1 py-3 px-2 sm:px-4 rounded-2xl bg-primary text-primary-foreground shadow-md flex items-center justify-center gap-2"
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
         >
-          <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 5v14M5 12h14" />
           </svg>
-          Add List
+          <span className="font-semibold text-sm sm:text-base whitespace-nowrap">Add List</span>
         </motion.button>
       </div>
       <CreateListModal

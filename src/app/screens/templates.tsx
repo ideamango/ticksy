@@ -4,19 +4,39 @@ import { ChevronLeft, Copy } from "lucide-react";
 import { toast } from "sonner";
 import { categories, templates } from "../data/templates";
 import { useLists } from "../context/list-context";
+import { useState } from "react";
+import { UseTemplateModal } from "../components/use-template-modal";
+import { CreateTemplateModal } from "../components/create-template-modal";
+import type { ListTemplate } from "../types";
 
 export function Templates() {
   const navigate = useNavigate();
-  const { createFromTemplate } = useLists();
+  const { createFromTemplate, customTemplates, createTemplate } = useLists();
 
-  const handleUseTemplate = (templateId: string) => {
-    const created = createFromTemplate(templateId);
+  const [selectedTemplate, setSelectedTemplate] = useState<ListTemplate | null>(null);
+  const [isUseModalOpen, setIsUseModalOpen] = useState(false);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+
+  const allTemplates = [...customTemplates, ...templates];
+
+  const handleUseTemplateClick = (template: ListTemplate) => {
+    setSelectedTemplate(template);
+    setIsUseModalOpen(true);
+  };
+
+  const handleCreateListFromTemplate = (name: string, templateId: string) => {
+    const created = createFromTemplate(templateId, name);
     if (!created) {
       toast.error("Could not create a list from this template.");
       return;
     }
-    toast.success(`Created list from "${created.title}" template`);
+    toast.success(`Created list "${created.title}"`);
     navigate(`/list/${created.id}`);
+  };
+
+  const handleCreateNewTemplate = (templateData: any) => {
+    createTemplate(templateData);
+    toast.success("Template created successfully!");
   };
 
   return (
@@ -40,10 +60,9 @@ export function Templates() {
           </p>
         </div>
 
-        {/* Templates Grid */}
         <div className="mt-6">
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {templates.map((template, index) => (
+            {allTemplates.map((template, index) => (
               <motion.div
                 key={template.id}
                 initial={{ opacity: 0, y: 20 }}
@@ -68,7 +87,7 @@ export function Templates() {
                 </div>
 
                 <motion.button
-                  onClick={() => handleUseTemplate(template.id)}
+                  onClick={() => handleUseTemplateClick(template)}
                   className="w-full py-3 px-4 rounded-2xl bg-primary text-primary-foreground font-semibold sm:opacity-0 sm:group-hover:opacity-100 transition-all flex items-center justify-center gap-2"
                   whileTap={{ scale: 0.95 }}
                 >
@@ -92,7 +111,7 @@ export function Templates() {
               Save any list as a reusable template
             </p>
             <motion.button
-              onClick={() => alert('Template creation coming soon!')}
+              onClick={() => setIsCreateModalOpen(true)}
               className="px-6 py-2 rounded-2xl bg-primary text-primary-foreground font-semibold hover:bg-primary/80 transition-colors"
               whileTap={{ scale: 0.95 }}
             >
@@ -101,6 +120,18 @@ export function Templates() {
           </motion.div>
         </div>
       </div>
+      
+      <UseTemplateModal
+        isOpen={isUseModalOpen}
+        onClose={() => setIsUseModalOpen(false)}
+        template={selectedTemplate}
+        onCreate={handleCreateListFromTemplate}
+      />
+      <CreateTemplateModal
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+        onCreate={handleCreateNewTemplate}
+      />
     </div>
   );
 }

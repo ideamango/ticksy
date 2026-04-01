@@ -1,11 +1,19 @@
 import { useMemo, useState } from "react";
 import { motion } from "motion/react";
 import { useNavigate, useParams } from "react-router";
-import { ChevronLeft, Share2, MoreVertical, Plus } from "lucide-react";
+import { ChevronLeft, Share2, MoreVertical, Plus, Edit2, Trash2 } from "lucide-react";
 import { ListItem } from "../components/list-item";
 import { ListCard } from "../components/list-card";
 import { ShareModal } from "../components/share-modal";
 import { ReuseListModal } from "../components/reuse-list-modal";
+import { EditListModal } from "../components/edit-list-modal";
+import { DeleteListModal } from "../components/delete-list-modal";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "../components/ui/dropdown-menu";
 import confetti from "canvas-confetti";
 import { toast } from "sonner";
 import { categories, unitOptions } from "../data/templates";
@@ -15,12 +23,14 @@ import { formatLastUpdated, useLists } from "../context/list-context";
 export function ListDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { getListById, addItem, toggleItem, deleteItem, buildShareToken, updateItem, createListWithItems, lists } = useLists();
+  const { getListById, addItem, toggleItem, deleteItem, buildShareToken, updateItem, createListWithItems, deleteList, lists } = useLists();
   const [newItemName, setNewItemName] = useState("");
   const [newItemQuantity, setNewItemQuantity] = useState("");
   const [newItemUnit, setNewItemUnit] = useState(unitOptions[0]);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [isReuseModalOpen, setIsReuseModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   const list = id ? getListById(id) : undefined;
 
@@ -83,8 +93,8 @@ export function ListDetail() {
     deleteItem(list.id, itemId);
   };
 
-  const handleEditItem = (itemId: string, patch: { description?: string; quantity?: string; unit?: Unit | undefined }) => {
-    updateItem(list.id, itemId, patch);
+  const handleEditItem = (itemId: string, patch: { description?: string; quantity?: string; unit?: string | undefined }) => {
+    updateItem(list.id, itemId, { ...patch, unit: patch.unit as Unit | undefined });
   };
 
   const handleAddItem = () => {
@@ -111,23 +121,23 @@ export function ListDetail() {
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
         {/* Header */}
         <div className="bg-gradient-to-br from-primary/10 via-secondary/10 to-accent/10 px-6 pt-8 pb-8 rounded-b-[3rem] sticky top-0 z-10 backdrop-blur-lg">
-          <div className="flex items-center justify-between mb-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
             <div className="flex items-center gap-4">
               <motion.button
                 onClick={() => navigate("/")}
-                className="p-2 hover:bg-white/50 rounded-full transition-colors"
+                className="p-2 hover:bg-white/50 rounded-full transition-colors shrink-0"
                 whileTap={{ scale: 0.9 }}
               >
                 <ChevronLeft className="w-6 h-6" />
               </motion.button>
 
-              <div>
-                <h2 className="mb-0">{`${list.title} ${list.emoji ?? ""}`.trim()}</h2>
-                <p className="text-sm text-muted-foreground">{categoryLabel}</p>
+              <div className="min-w-0">
+                <h2 className="mb-0 truncate">{`${list.title} ${list.emoji ?? ""}`.trim()}</h2>
+                <p className="text-sm text-muted-foreground truncate">{categoryLabel}</p>
               </div>
             </div>
 
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2 sm:gap-4 overflow-x-auto pb-2 sm:pb-0 hide-scrollbar">
               <div className="flex items-center gap-2 text-sm">
                 <span className="px-3 py-1 bg-primary/20 text-primary rounded-full">
                   {completedCount}/{totalCount} done
@@ -158,12 +168,32 @@ export function ListDetail() {
                 >
                   ♻️
                 </motion.button>
-                <motion.button
-                  className="p-2 hover:bg-white/50 rounded-full transition-colors"
-                  whileTap={{ scale: 0.9 }}
-                >
-                  <MoreVertical className="w-5 h-5" />
-                </motion.button>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <motion.button
+                      className="p-2 hover:bg-white/50 rounded-full transition-colors outline-none cursor-pointer"
+                      whileTap={{ scale: 0.9 }}
+                    >
+                      <MoreVertical className="w-5 h-5" />
+                    </motion.button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-48 bg-card rounded-2xl p-2 shadow-xl border-0">
+                    <DropdownMenuItem
+                      onClick={() => setIsEditModalOpen(true)}
+                      className="gap-2 p-3 rounded-xl cursor-pointer hover:bg-muted/50 focus:bg-muted/50"
+                    >
+                      <Edit2 className="w-4 h-4 text-muted-foreground" />
+                      <span>Edit List</span>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={() => setIsDeleteModalOpen(true)}
+                      className="gap-2 p-3 rounded-xl cursor-pointer text-destructive focus:text-destructive hover:bg-destructive/10 focus:bg-destructive/10"
+                    >
+                      <Trash2 className="w-4 h-4 text-destructive" />
+                      <span>Delete List</span>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </div>
             </div>
           </div>
@@ -209,13 +239,13 @@ export function ListDetail() {
                     onKeyDown={(e) => e.key === "Enter" && handleAddItem()}
                   />
 
-                  <div className="flex gap-3">
+                  <div className="flex flex-wrap sm:flex-nowrap gap-3">
                     <input
                       type="text"
                       value={newItemQuantity}
                       onChange={(e) => setNewItemQuantity(e.target.value)}
                       placeholder="Qty"
-                      className="w-20 px-4 py-3 rounded-2xl bg-input-background border-0 focus:ring-2 focus:ring-primary outline-none transition-all"
+                      className="w-20 sm:w-24 px-4 py-3 rounded-2xl bg-input-background border-0 focus:ring-2 focus:ring-primary outline-none transition-all"
                       onKeyDown={(e) => e.key === "Enter" && handleAddItem()}
                     />
 
@@ -295,11 +325,27 @@ export function ListDetail() {
         onClose={() => setIsReuseModalOpen(false)}
         source={list}
         onCreateFromSelection={(name, selectedItemIds, newItems) => {
-          const selectedFromSource = list.items.filter((it) => selectedItemIds.includes(it.id)).map((it) => ({ description: it.description, quantity: it.quantity, unit: it.unit }));
+          const selectedFromSource = list.items.filter((it) => selectedItemIds.includes(it.id)).map((it) => ({ description: it.description, quantity: it.quantity, unit: it.unit as Unit | undefined }));
           // merge selected + newItems
-          const itemsToCreate = [...selectedFromSource, ...newItems];
+          const itemsToCreate = [...selectedFromSource, ...newItems] as { description: string; quantity?: string; unit?: Unit | undefined }[];
           // default category same as source
           createListWithItems(name, list.categoryId, list.emoji, itemsToCreate);
+        }}
+      />
+      <EditListModal
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        list={list}
+      />
+      <DeleteListModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        listName={`${list.title} ${list.emoji ?? ""}`.trim()}
+        onConfirm={() => {
+          setIsDeleteModalOpen(false);
+          deleteList(list.id);
+          toast.success("List deleted");
+          navigate("/", { replace: true });
         }}
       />
     </div>

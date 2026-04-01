@@ -13,10 +13,10 @@ interface CreateListModalProps {
 }
 
 export function CreateListModal({ isOpen, onClose, onCreate }: CreateListModalProps) {
+  const [activeTab, setActiveTab] = useState<"new" | "existing">("new");
   const [name, setName] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<CategoryId>("groceries");
   const { lists, createListWithItems } = useLists();
-  const [showReusePicker, setShowReusePicker] = useState(false);
   const [selectedSource, setSelectedSource] = useState<any | undefined>(undefined);
   const [isReuseModalOpen, setIsReuseModalOpen] = useState(false);
 
@@ -48,8 +48,8 @@ export function CreateListModal({ isOpen, onClose, onCreate }: CreateListModalPr
         onClick={(e) => e.stopPropagation()}
         className="bg-card rounded-3xl p-6 w-full max-w-md shadow-2xl"
       >
-        <div className="flex items-center justify-between mb-6">
-          <h3>Create New List</h3>
+        <div className="flex items-center justify-between mb-4">
+          <h3>Add List</h3>
           <button
             onClick={onClose}
             className="p-2 hover:bg-muted rounded-full transition-colors"
@@ -58,83 +58,108 @@ export function CreateListModal({ isOpen, onClose, onCreate }: CreateListModalPr
           </button>
         </div>
 
-        <div className="mb-6">
-          <label className="block mb-2 text-sm">List Name</label>
-          <input
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="e.g., Weekly Grocery"
-            className="w-full px-4 py-3 rounded-2xl bg-input-background border-0 focus:ring-2 focus:ring-primary outline-none transition-all"
-            autoFocus
-            onKeyDown={(e) => e.key === "Enter" && handleCreate()}
-          />
+        <div className="flex bg-muted/50 p-1 rounded-xl mb-6">
+          <button
+            onClick={() => setActiveTab("new")}
+            className={`flex-1 py-2 text-sm font-medium rounded-lg transition-all ${
+              activeTab === "new" ? "bg-white shadow-sm text-foreground" : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            Create New
+          </button>
+          <button
+            onClick={() => setActiveTab("existing")}
+            className={`flex-1 py-2 text-sm font-medium rounded-lg transition-all ${
+              activeTab === "existing" ? "bg-white shadow-sm text-foreground" : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            Use Existing
+          </button>
         </div>
 
-        <div className="mb-6">
-          <label className="block mb-3 text-sm">Category</label>
-          <div className="grid grid-cols-3 gap-2">
-            {categories.map((category) => (
-              <motion.button
-                key={category.id}
-                onClick={() => setSelectedCategory(category.id)}
-                className={`
-                  p-3 rounded-2xl border-2 transition-all text-center
-                  ${selectedCategory === category.id
-                    ? "border-primary bg-primary/10"
-                    : "border-muted bg-white"
-                  }
-                `}
-                whileTap={{ scale: 0.95 }}
-              >
-                <div className="text-2xl mb-1">{category.emoji}</div>
-                <div className="text-xs">{category.label}</div>
-              </motion.button>
-            ))}
-          </div>
-        </div>
-
-        <div className="mb-6">
-          <div className="flex items-center justify-between mb-2">
-            <div className="text-sm text-muted-foreground">Or reuse an existing list</div>
-            <button onClick={() => setShowReusePicker((s) => !s)} className="text-sm text-primary underline">
-              {showReusePicker ? "Hide" : "Use existing"}
-            </button>
-          </div>
-
-          {showReusePicker && (
-            <div className="max-h-48 overflow-auto space-y-2">
-              {lists.map((l) => (
-                <button
-                  key={l.id}
-                  onClick={() => {
-                    setSelectedSource(l);
-                    setIsReuseModalOpen(true);
-                  }}
-                  className="w-full text-left p-3 rounded-lg border hover:bg-muted/10"
-                >
-                  <div className="font-medium">{`${l.title} ${l.emoji ?? ""}`.trim()}</div>
-                  <div className="text-xs text-muted-foreground">{l.items.length} items</div>
-                </button>
-              ))}
+        {activeTab === "new" ? (
+          <>
+            <div className="mb-6">
+              <label className="block mb-2 text-sm">List Name</label>
+              <input
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="e.g., Weekly Grocery"
+                className="w-full px-4 py-3 rounded-2xl bg-input-background border-0 focus:ring-2 focus:ring-primary outline-none transition-all"
+                autoFocus
+                onKeyDown={(e) => e.key === "Enter" && handleCreate()}
+              />
             </div>
-          )}
-        </div>
 
-        <motion.button
-          onClick={handleCreate}
-          disabled={!name.trim()}
-          className={`
-            w-full py-3 px-4 rounded-2xl font-semibold transition-all
-            ${name.trim()
-              ? "bg-primary text-primary-foreground"
-              : "bg-muted text-muted-foreground cursor-not-allowed"
-            }
-          `}
-          whileTap={name.trim() ? { scale: 0.98 } : {}}
-        >
-          Create List
-        </motion.button>
+            <div className="mb-6">
+              <label className="block mb-3 text-sm">Category</label>
+              <div className="grid grid-cols-3 gap-2">
+                {categories.map((category) => (
+                  <motion.button
+                    key={category.id}
+                    onClick={() => setSelectedCategory(category.id)}
+                    className={`
+                      p-3 rounded-2xl border-2 transition-all text-center
+                      ${selectedCategory === category.id
+                        ? "border-primary bg-primary/10"
+                        : "border-muted bg-white"
+                      }
+                    `}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    <div className="text-2xl mb-1">{category.emoji}</div>
+                    <div className="text-xs">{category.label}</div>
+                  </motion.button>
+                ))}
+              </div>
+            </div>
+
+            <motion.button
+              onClick={handleCreate}
+              disabled={!name.trim()}
+              className={`
+                w-full py-3 px-4 rounded-2xl font-semibold transition-all
+                ${name.trim()
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-muted text-muted-foreground cursor-not-allowed"
+                }
+              `}
+              whileTap={name.trim() ? { scale: 0.98 } : {}}
+            >
+              Create List
+            </motion.button>
+          </>
+        ) : (
+          <div className="mb-2">
+            {lists.length === 0 ? (
+              <div className="text-center py-8 text-muted-foreground bg-muted/20 rounded-2xl">
+                No existing lists found. Create a new one first!
+              </div>
+            ) : (
+              <div className="max-h-[300px] overflow-auto space-y-2 pr-2">
+                {lists.map((l) => (
+                  <button
+                    key={l.id}
+                    onClick={() => {
+                      setSelectedSource(l);
+                      setIsReuseModalOpen(true);
+                    }}
+                    className="w-full text-left p-4 rounded-2xl border-2 border-transparent bg-input-background hover:bg-muted/50 hover:border-primary/20 transition-all flex justify-between items-center group"
+                  >
+                    <div>
+                      <div className="font-medium text-foreground">{`${l.title} ${l.emoji ?? ""}`.trim()}</div>
+                      <div className="text-xs text-muted-foreground mt-1">{l.items.length} items</div>
+                    </div>
+                    <div className="text-primary opacity-0 group-hover:opacity-100 transition-opacity text-sm font-medium">
+                      Select
+                    </div>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
         <ReuseListModal
           isOpen={isReuseModalOpen && !!selectedSource}
           onClose={() => setIsReuseModalOpen(false)}

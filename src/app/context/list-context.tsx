@@ -7,7 +7,7 @@ import {
     type ReactNode,
 } from "react";
 import { defaultLists, templates } from "../data/templates";
-import type { CategoryId, SharePayload, SharedList, Unit } from "../types";
+import type { CategoryId, SharePayload, SharedList, Unit, ListTemplate } from "../types";
 
 // Storage keys for local persistence. We keep the old key for migration.
 const STORAGE_KEY = "ticksy-data-v1";
@@ -17,7 +17,7 @@ interface ListsContextValue {
     lists: SharedList[];
     createList: (name: string, categoryId: CategoryId, emoji?: string) => SharedList;
     createListWithItems: (name: string, categoryId: CategoryId, emoji: string | undefined, items: Array<{ description: string; quantity?: string; unit?: Unit }>) => SharedList;
-    createFromTemplate: (templateId: string) => SharedList | null;
+    createFromTemplate: (templateId: string, customName?: string) => SharedList | null;
     getListById: (id: string) => SharedList | undefined;
     addItem: (listId: string, item: { description: string; quantity?: string; unit?: Unit }) => void;
     toggleItem: (listId: string, itemId: string) => void;
@@ -25,6 +25,10 @@ interface ListsContextValue {
     updateItem: (listId: string, itemId: string, patch: { description?: string; quantity?: string; unit?: Unit }) => void;
     buildShareToken: (listId: string) => string | null;
     importSharedList: (token: string) => SharedList | null;
+    deleteList: (listId: string) => void;
+    updateList: (listId: string, patch: { title?: string; emoji?: string; categoryId?: CategoryId }) => void;
+    customTemplates: ListTemplate[];
+    createTemplate: (template: Omit<ListTemplate, "id">) => void;
 }
 
 const ListsContext = createContext<ListsContextValue | null>(null);
@@ -95,6 +99,38 @@ function loadLists(): SharedList[] {
 
 export function ListsProvider({ children }: { children: ReactNode }) {
     const [lists, setLists] = useState<SharedList[]>(() => loadLists());
+    const [customTemplates, setCustomTemplates] = useState<ListTemplate[]>(() => {
+        if (typeof window !== "undefined") {
+            const raw = window.localStorage.getItem("ticksy-templates-v1");
+            if (raw) {
+                try {
+                    const parsed = JSON.parse(raw) as ListTemplate[];
+                    if (Array.isArray(parsed)) return parsed;
+                } catch {}
+            }
+        }
+        return [];
+    });
+
+    const persistTemplates = useCallback((nextState: ListTemplate[] | ((prev: ListTemplate[]) => ListTemplate[])) => {
+        setCustomTemplates((previous) => {
+            const nextTemplates = typeof nextState === "function" ? nextState(previous) : nextState;
+            if (typeof window !== "undefined") {
+                window.localStorage.setItem("ticksy-templates-v1", JSON.stringify(nextTemplates));
+            }
+            return nextTemplates;
+        });
+    }, []);
+
+    const createTemplate = useCallback((template: Omit<ListTemplate, "id">) => {
+        persistTemplates((prev) => [
+            {
+                ...template,
+                id: createId("tpl-custom"),
+            },
+            ...prev,
+        ]);
+    }, [persistTemplates]);
 
     const persist = useCallback(
         (nextState: SharedList[] | ((previous: SharedList[]) => SharedList[])) => {
@@ -153,8 +189,8 @@ export function ListsProvider({ children }: { children: ReactNode }) {
     );
 
     const createFromTemplate = useCallback(
-        (templateId: string) => {
-            const template = templates.find((item) => item.id === templateId);
+        (templateId: string, customName?: string) => {
+            const template = templates.find((item) => item.id === templateId) || customTemplates.find((t) => t.id === templateId);
             if (!template) {
                 return null;
             }
@@ -162,7 +198,7 @@ export function ListsProvider({ children }: { children: ReactNode }) {
             const now = Date.now();
             const list: SharedList = {
                 id: createId("list"),
-                title: template.name,
+                title: customName || template.name,
                 categoryId: template.categoryId,
                 emoji: template.emoji,
                 createdAt: now,
@@ -284,6 +320,32 @@ export function ListsProvider({ children }: { children: ReactNode }) {
         [persist],
     );
 
+    const deleteList = useCallback(
+        (listId: string) => {
+            persist((previous) => previous.filter((list) => list.id !== listId));
+        },
+        [persist],
+    );
+
+    const updateList = useCallback(
+        (listId: string, patch: { title?: string; emoji?: string; categoryId?: CategoryId }) => {
+            const now = Date.now();
+            persist((previous) =>
+                previous.map((list) => {
+                    if (list.id !== listId) return list;
+                    return {
+                        ...list,
+                        title: patch.title !== undefined ? patch.title : list.title,
+                        emoji: patch.emoji !== undefined ? patch.emoji : list.emoji,
+                        categoryId: patch.categoryId !== undefined ? patch.categoryId : list.categoryId,
+                        updatedAt: now,
+                    };
+                }),
+            );
+        },
+        [persist],
+    );
+
     const buildShareToken = useCallback(
         (listId: string) => {
             const list = lists.find((entry) => entry.id === listId);
@@ -355,6 +417,10 @@ export function ListsProvider({ children }: { children: ReactNode }) {
             updateItem,
             buildShareToken,
             importSharedList,
+            deleteList,
+            updateList,
+            customTemplates,
+            createTemplate,
         }),
         [
             lists,
@@ -368,6 +434,10 @@ export function ListsProvider({ children }: { children: ReactNode }) {
             updateItem,
             buildShareToken,
             importSharedList,
+            deleteList,
+            updateList,
+            customTemplates,
+            createTemplate,
         ],
     );
 
