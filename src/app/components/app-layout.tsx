@@ -53,7 +53,7 @@ export function AppLayout({ children }: AppLayoutProps) {
               transition={{ delay: 0.3 }}
               className="text-2xl font-bold bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent"
             >
-              ListShare
+              Ticksy
             </motion.h2>
           </motion.div>
         </motion.div>

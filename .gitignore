@@ -1,0 +1,54 @@
+### Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.pnp/
+.pnp.js
+
+### Production
+dist/
+build/
+
+### Env files
+.env
+.env.*
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+### Firebase
+.firebase/
+firebase-debug.log
+
+### Logs
+logs/
+*.log
+npm-debug.log*
+
+### OS files
+.DS_Store
+Thumbs.db
+
+### Editors
+.vscode/
+.idea/
+*.sublime-workspace
+*.sublime-project
+
+### Cache / tooling
+.cache/
+.parcel-cache/
+.turbo/
+.vite/
+/.vite
+.next/
+coverage/
+/.nyc_output/
+*.tsbuildinfo
+
+### Package managers
+/.npm
+

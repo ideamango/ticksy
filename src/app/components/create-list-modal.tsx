@@ -3,6 +3,8 @@ import { X } from "lucide-react";
 import { useState } from "react";
 import { categories } from "../data/templates";
 import type { CategoryId } from "../types";
+import { useLists } from "../context/list-context";
+import { ReuseListModal } from "./reuse-list-modal";
 
 interface CreateListModalProps {
   isOpen: boolean;
@@ -13,6 +15,10 @@ interface CreateListModalProps {
 export function CreateListModal({ isOpen, onClose, onCreate }: CreateListModalProps) {
   const [name, setName] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<CategoryId>("groceries");
+  const { lists, createListWithItems } = useLists();
+  const [showReusePicker, setShowReusePicker] = useState(false);
+  const [selectedSource, setSelectedSource] = useState<any | undefined>(undefined);
+  const [isReuseModalOpen, setIsReuseModalOpen] = useState(false);
 
   const handleCreate = () => {
     if (name.trim()) {
@@ -88,6 +94,33 @@ export function CreateListModal({ isOpen, onClose, onCreate }: CreateListModalPr
           </div>
         </div>
 
+        <div className="mb-6">
+          <div className="flex items-center justify-between mb-2">
+            <div className="text-sm text-muted-foreground">Or reuse an existing list</div>
+            <button onClick={() => setShowReusePicker((s) => !s)} className="text-sm text-primary underline">
+              {showReusePicker ? "Hide" : "Use existing"}
+            </button>
+          </div>
+
+          {showReusePicker && (
+            <div className="max-h-48 overflow-auto space-y-2">
+              {lists.map((l) => (
+                <button
+                  key={l.id}
+                  onClick={() => {
+                    setSelectedSource(l);
+                    setIsReuseModalOpen(true);
+                  }}
+                  className="w-full text-left p-3 rounded-lg border hover:bg-muted/10"
+                >
+                  <div className="font-medium">{`${l.title} ${l.emoji ?? ""}`.trim()}</div>
+                  <div className="text-xs text-muted-foreground">{l.items.length} items</div>
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+
         <motion.button
           onClick={handleCreate}
           disabled={!name.trim()}
@@ -102,6 +135,21 @@ export function CreateListModal({ isOpen, onClose, onCreate }: CreateListModalPr
         >
           Create List
         </motion.button>
+        <ReuseListModal
+          isOpen={isReuseModalOpen && !!selectedSource}
+          onClose={() => setIsReuseModalOpen(false)}
+          source={selectedSource}
+          onCreateFromSelection={(newName, selectedItemIds, newItems) => {
+            if (!selectedSource) return;
+            const selectedFromSource = selectedSource.items
+              .filter((it: any) => selectedItemIds.includes(it.id))
+              .map((it: any) => ({ description: it.description, quantity: it.quantity, unit: it.unit }));
+            const itemsToCreate = [...selectedFromSource, ...newItems];
+            createListWithItems(newName, selectedSource.categoryId, selectedSource.emoji, itemsToCreate);
+            setIsReuseModalOpen(false);
+            onClose();
+          }}
+        />
       </motion.div>
     </motion.div>
   );

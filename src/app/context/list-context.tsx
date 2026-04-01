@@ -9,16 +9,20 @@ import {
 import { defaultLists, templates } from "../data/templates";
 import type { CategoryId, SharePayload, SharedList, Unit } from "../types";
 
-const STORAGE_KEY = "shared-list-app-v1";
+// Storage keys for local persistence. We keep the old key for migration.
+const STORAGE_KEY = "ticksy-data-v1";
+const LEGACY_STORAGE_KEY = "shared-list-app-v1";
 
 interface ListsContextValue {
     lists: SharedList[];
     createList: (name: string, categoryId: CategoryId, emoji?: string) => SharedList;
+    createListWithItems: (name: string, categoryId: CategoryId, emoji: string | undefined, items: Array<{ description: string; quantity?: string; unit?: Unit }>) => SharedList;
     createFromTemplate: (templateId: string) => SharedList | null;
     getListById: (id: string) => SharedList | undefined;
     addItem: (listId: string, item: { description: string; quantity?: string; unit?: Unit }) => void;
     toggleItem: (listId: string, itemId: string) => void;
     deleteItem: (listId: string, itemId: string) => void;
+    updateItem: (listId: string, itemId: string, patch: { description?: string; quantity?: string; unit?: Unit }) => void;
     buildShareToken: (listId: string) => string | null;
     importSharedList: (token: string) => SharedList | null;
 }
@@ -62,13 +66,27 @@ function loadLists(): SharedList[] {
         return defaultLists;
     }
 
-    const raw = window.localStorage.getItem(STORAGE_KEY);
-    if (!raw) {
-        return defaultLists;
+    // If new key is not present but legacy key exists, migrate it.
+    const legacyRaw = window.localStorage.getItem(LEGACY_STORAGE_KEY);
+    const newRaw = window.localStorage.getItem(STORAGE_KEY);
+
+    if (!newRaw && legacyRaw) {
+        try {
+            const parsedLegacy = JSON.parse(legacyRaw) as SharedList[];
+            if (Array.isArray(parsedLegacy) && parsedLegacy.length) {
+                window.localStorage.setItem(STORAGE_KEY, JSON.stringify(parsedLegacy));
+                // keep legacy for safety, but future writes will go to new key
+                return parsedLegacy;
+            }
+        } catch {
+            // fallthrough to try new key
+        }
     }
 
+    if (!newRaw) return defaultLists;
+
     try {
-        const parsed = JSON.parse(raw) as SharedList[];
+        const parsed = JSON.parse(newRaw) as SharedList[];
         return parsed.length ? parsed : defaultLists;
     } catch {
         return defaultLists;
@@ -102,6 +120,31 @@ export function ListsProvider({ children }: { children: ReactNode }) {
                 createdAt: now,
                 updatedAt: now,
                 items: [],
+            };
+            persist((previous) => [newList, ...previous]);
+            return newList;
+        },
+        [persist],
+    );
+
+    const createListWithItems = useCallback(
+        (name: string, categoryId: CategoryId, emoji: string | undefined, items: Array<{ description: string; quantity?: string; unit?: Unit }>) => {
+            const now = Date.now();
+            const newList: SharedList = {
+                id: createId("list"),
+                title: name,
+                categoryId,
+                emoji: emoji ?? "📝",
+                createdAt: now,
+                updatedAt: now,
+                items: items.map((it) => ({
+                    id: createId("item"),
+                    description: it.description,
+                    quantity: it.quantity,
+                    unit: it.unit,
+                    completed: false,
+                    createdAt: now,
+                })),
             };
             persist((previous) => [newList, ...previous]);
             return newList;
@@ -216,6 +259,31 @@ export function ListsProvider({ children }: { children: ReactNode }) {
         [persist],
     );
 
+    const updateItem = useCallback(
+        (listId: string, itemId: string, patch: { description?: string; quantity?: string; unit?: Unit }) => {
+            const now = Date.now();
+            persist((previous) =>
+                previous.map((list) => {
+                    if (list.id !== listId) return list;
+                    return {
+                        ...list,
+                        updatedAt: now,
+                        items: list.items.map((item) => {
+                            if (item.id !== itemId) return item;
+                            return {
+                                ...item,
+                                description: patch.description ?? item.description,
+                                quantity: patch.quantity ?? item.quantity,
+                                unit: patch.unit ?? item.unit,
+                            };
+                        }),
+                    };
+                }),
+            );
+        },
+        [persist],
+    );
+
     const buildShareToken = useCallback(
         (listId: string) => {
             const list = lists.find((entry) => entry.id === listId);
@@ -278,22 +346,26 @@ export function ListsProvider({ children }: { children: ReactNode }) {
         () => ({
             lists,
             createList,
+            createListWithItems,
             createFromTemplate,
             getListById,
             addItem,
             toggleItem,
             deleteItem,
+            updateItem,
             buildShareToken,
             importSharedList,
         }),
         [
             lists,
             createList,
+            createListWithItems,
             createFromTemplate,
             getListById,
             addItem,
             toggleItem,
             deleteItem,
+            updateItem,
             buildShareToken,
             importSharedList,
         ],

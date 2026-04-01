@@ -11,6 +11,7 @@ interface ListCardProps {
   total: number;
   lastUpdated: string;
   index: number;
+  active?: boolean;
 }
 
 export function ListCard({
@@ -21,6 +22,7 @@ export function ListCard({
   total,
   lastUpdated,
   index,
+  active,
 }: ListCardProps) {
   const navigate = useNavigate();
 
@@ -32,7 +34,9 @@ export function ListCard({
       whileHover={{ y: -4 }}
       whileTap={{ scale: 0.98 }}
       onClick={() => navigate(`/list/${id}`)}
-      className="bg-card rounded-3xl p-6 shadow-md hover:shadow-xl transition-shadow cursor-pointer"
+      className={`rounded-3xl p-6 transition-shadow cursor-pointer
+        ${active ? "bg-primary/5 border-2 border-primary" : "bg-card shadow-md hover:shadow-xl"}
+      `}
     >
       <div className="mb-4">
         <h3 className="mb-1">{title}</h3>

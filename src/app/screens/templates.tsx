@@ -21,8 +21,8 @@ export function Templates() {
 
   return (
     <div className="min-h-screen bg-background pb-24">
-      {/* Mobile-first container with max width for desktop */}
-      <div className="max-w-md mx-auto">
+      {/* Responsive container for desktop */}
+      <div className="max-w-7xl mx-auto px-6 lg:px-8">
         {/* Header */}
         <div className="bg-gradient-to-br from-primary/10 via-secondary/10 to-accent/10 px-6 pt-8 pb-8 rounded-b-[3rem] sticky top-0 z-10">
           <div className="flex items-center gap-4 mb-4">
@@ -41,8 +41,8 @@ export function Templates() {
         </div>
 
         {/* Templates Grid */}
-        <div className="px-6 mt-6">
-          <div className="grid gap-4">
+        <div className="mt-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {templates.map((template, index) => (
               <motion.div
                 key={template.id}
@@ -92,11 +92,11 @@ export function Templates() {
               Save any list as a reusable template
             </p>
             <motion.button
-              onClick={() => navigate("/")}
-              className="px-6 py-2 rounded-2xl bg-white hover:bg-muted transition-colors"
+              onClick={() => alert('Template creation coming soon!')}
+              className="px-6 py-2 rounded-2xl bg-primary text-primary-foreground font-semibold hover:bg-primary/80 transition-colors"
               whileTap={{ scale: 0.95 }}
             >
-              Go to Lists
+              Create New Template
             </motion.button>
           </motion.div>
         </div>
