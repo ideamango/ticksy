@@ -112,8 +112,9 @@ export function ListDetail() {
 
   const categoryLabel = categories.find((category) => category.id === list.categoryId)?.label ?? "Other";
   const token = buildShareToken(list.id);
+  const baseUrl = window.location.hostname === 'localhost' ? 'https://ticksy-30bfa.web.app' : window.location.origin;
   const shareLink = token
-    ? `${window.location.origin}/?import=${token}`
+    ? `${baseUrl}/?import=${token}`
     : window.location.href;
 
   return (
@@ -132,8 +133,8 @@ export function ListDetail() {
               </motion.button>
               
               <div className="min-w-0 flex-1 flex flex-col justify-center">
-                <h2 className="mb-0 text-xl sm:text-2xl font-bold truncate block w-full">{`${list.title} ${list.emoji ?? ""}`.trim()}</h2>
-                <p className="text-sm sm:text-base text-muted-foreground truncate block w-full leading-snug">{categoryLabel}</p>
+                <h2 className="mb-0 text-base sm:text-2xl font-bold block w-full leading-tight line-clamp-2 sm:truncate">{`${list.title} ${list.emoji ?? ""}`.trim()}</h2>
+                <p className="text-xs sm:text-base text-muted-foreground truncate block w-full leading-snug">{categoryLabel}</p>
               </div>
             </div>
 
@@ -200,10 +201,10 @@ export function ListDetail() {
         </div>
 
         {/* Main grid: left lists sidebar + right detail */}
-        <div className="relative z-20 grid grid-cols-1 lg:grid-cols-3 gap-6 px-0 -mt-6">
-          <aside className="hidden lg:block lg:col-span-1 px-2">
+        <div className="relative z-20 grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-6 px-0 -mt-6">
+          <aside className="hidden lg:block px-2">
             {/* Sidebar lists (scrollable) */}
-            <div className="max-h-[calc(100vh-6rem)] overflow-auto space-y-4 pr-4">
+            <div className="max-h-[calc(100vh-6rem)] overflow-auto space-y-3 pr-2">
               {/** Render small list overview so users can switch lists on wide screens */}
               {lists.map((l, idx) => (
                 <ListCard
@@ -216,12 +217,13 @@ export function ListDetail() {
                   lastUpdated={formatLastUpdated(l.updatedAt)}
                   index={idx}
                   active={l.id === list.id}
+                  compact
                 />
               ))}
             </div>
           </aside>
 
-          <main className="lg:col-span-2 px-2">
+          <main className="px-2">
             <div className="px-2 mt-6">
               {/* Items List */}
               <div className="space-y-2">

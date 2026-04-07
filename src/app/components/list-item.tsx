@@ -1,6 +1,6 @@
 import { motion, AnimatePresence } from "motion/react";
 import { AnimatedCheckbox } from "./animated-checkbox";
-import { Trash2, Edit2 } from "lucide-react";
+import { Trash2, Edit2, MoreVertical } from "lucide-react";
 import { useState, useRef, type MouseEvent } from "react";
 import { unitOptions } from "../data/templates";
 
@@ -31,6 +31,7 @@ export function ListItem({
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [editQuantity, setEditQuantity] = useState(quantity ?? "");
   const [editUnit, setEditUnit] = useState<string | undefined>(unit);
+  const [showMobileActions, setShowMobileActions] = useState(false);
 
   const handleDelete = () => {
     setIsDeleting(true);
@@ -140,21 +141,65 @@ export function ListItem({
             )}
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1 sm:gap-2 shrink-0">
+            {/* Mobile: show MoreVertical toggle */}
+            <motion.button
+              onClick={(e: MouseEvent) => {
+                e.stopPropagation();
+                setShowMobileActions(!showMobileActions);
+              }}
+              className="sm:hidden p-2 hover:bg-muted/50 rounded-full transition-colors"
+              whileTap={{ scale: 0.9 }}
+              aria-label="Actions"
+            >
+              <MoreVertical className="w-4 h-4 text-muted-foreground" />
+            </motion.button>
+
+            {/* Desktop: show on group hover | Mobile: show when toggled */}
+            <AnimatePresence>
+              {(showMobileActions || undefined) && (
+                <motion.div
+                  initial={{ opacity: 0, width: 0 }}
+                  animate={{ opacity: 1, width: "auto" }}
+                  exit={{ opacity: 0, width: 0 }}
+                  className="flex items-center gap-1 overflow-hidden sm:hidden"
+                >
+                  {onEdit && (
+                    <motion.button
+                      onClick={startEditing}
+                      className="p-2 hover:bg-secondary/10 rounded-full"
+                      whileTap={{ scale: 0.9 }}
+                      aria-label="Edit"
+                    >
+                      <Edit2 className="w-4 h-4 text-foreground" />
+                    </motion.button>
+                  )}
+                  <motion.button
+                    onClick={handleDelete}
+                    className="p-2 hover:bg-destructive/10 rounded-full"
+                    whileTap={{ scale: 0.9 }}
+                  >
+                    <Trash2 className="w-4 h-4 text-destructive" />
+                    <span className="sr-only">Delete</span>
+                  </motion.button>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            {/* Desktop hover actions */}
             {onEdit && (
               <motion.button
                 onClick={startEditing}
-                className="sm:opacity-0 sm:group-hover:opacity-100 transition-opacity p-2 hover:bg-secondary/10 rounded-full"
+                className="hidden sm:block opacity-0 group-hover:opacity-100 transition-opacity p-2 hover:bg-secondary/10 rounded-full"
                 whileTap={{ scale: 0.9 }}
                 aria-label="Edit"
               >
                 <Edit2 className="w-4 h-4 text-foreground" />
               </motion.button>
             )}
-
             <motion.button
               onClick={handleDelete}
-              className="sm:opacity-0 sm:group-hover:opacity-100 transition-opacity p-2 hover:bg-destructive/10 rounded-full"
+              className="hidden sm:block opacity-0 group-hover:opacity-100 transition-opacity p-2 hover:bg-destructive/10 rounded-full"
               whileTap={{ scale: 0.9 }}
             >
               <Trash2 className="w-4 h-4 text-destructive" />

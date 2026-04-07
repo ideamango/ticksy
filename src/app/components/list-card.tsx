@@ -12,6 +12,7 @@ interface ListCardProps {
   lastUpdated: string;
   index: number;
   active?: boolean;
+  compact?: boolean;
 }
 
 export function ListCard({
@@ -23,6 +24,7 @@ export function ListCard({
   lastUpdated,
   index,
   active,
+  compact,
 }: ListCardProps) {
   const navigate = useNavigate();
 
@@ -34,26 +36,27 @@ export function ListCard({
       whileHover={{ y: -4 }}
       whileTap={{ scale: 0.98 }}
       onClick={() => navigate(`/list/${id}`)}
-      className={`rounded-3xl p-6 transition-shadow cursor-pointer
+      className={`rounded-3xl transition-shadow cursor-pointer
+        ${compact ? "p-4" : "p-6"}
         ${active ? "bg-primary/5 border-2 border-primary" : "bg-card shadow-md hover:shadow-xl"}
       `}
     >
-      <div className="mb-4">
-        <h3 className="mb-1">{title}</h3>
-        <div className="mb-2">
-          <span className="inline-flex px-2 py-1 text-xs bg-primary/10 text-primary rounded-full">
+      <div className={compact ? "mb-2" : "mb-4"}>
+        <h3 className={`mb-1 ${compact ? "text-sm font-semibold truncate" : ""}`}>{title}</h3>
+        <div className="mb-1">
+          <span className={`inline-flex px-2 py-0.5 bg-primary/10 text-primary rounded-full ${compact ? "text-[10px]" : "text-xs py-1"}`}>
             {category}
           </span>
         </div>
-        <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
-          <Clock className="w-3.5 h-3.5" />
+        <div className={`flex items-center gap-1.5 text-muted-foreground ${compact ? "text-xs" : "text-sm"}`}>
+          <Clock className={compact ? "w-3 h-3" : "w-3.5 h-3.5"} />
           <span>{lastUpdated}</span>
         </div>
       </div>
 
       <AnimatedProgressBar value={completed} max={total} />
 
-      {completed === total && total > 0 && (
+      {!compact && completed === total && total > 0 && (
         <motion.div
           initial={{ scale: 0, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}

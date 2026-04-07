@@ -216,7 +216,7 @@ export function ListsProvider({ children }: { children: ReactNode }) {
             persist((previous) => [list, ...previous]);
             return list;
         },
-        [persist],
+        [persist, customTemplates],
     );
 
     const getListById = useCallback(

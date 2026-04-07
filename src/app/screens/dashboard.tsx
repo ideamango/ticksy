@@ -218,7 +218,7 @@ export function Dashboard() {
             </p>
           </motion.div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4 pb-20 sm:pb-4">
             {lists.map((list, index) => (
               <ListCard
                 key={list.id}
@@ -243,10 +243,10 @@ export function Dashboard() {
       */}
       
       {/* Mobile Floating Action Button (Optional) */}
-      <div className="sm:hidden fixed bottom-6 right-6 z-50">
+      <div className="sm:hidden fixed bottom-8 right-6 z-50">
         <button
           onClick={() => setIsCreateModalOpen(true)}
-          className="w-14 h-14 bg-purple-600 text-white rounded-full flex items-center justify-center shadow-lg hover:bg-purple-700 active:scale-95 transition-all"
+          className="w-14 h-14 bg-purple-600 text-white rounded-full flex items-center justify-center shadow-xl hover:bg-purple-700 active:scale-95 transition-all ring-4 ring-purple-600/20"
         >
           <Plus className="w-6 h-6" strokeWidth={2.5} />
         </button>
