@@ -24,13 +24,13 @@ export function AnimatedProgressBar({ value, max }: AnimatedProgressBarProps) {
         <span className="text-sm text-muted-foreground">
           {value} of {max} done
         </span>
-        <span className="text-sm font-semibold text-primary">
+        <span className="text-sm font-bold text-foreground">
           {Math.round(percentage)}%
         </span>
       </div>
-      <div className="w-full h-3 bg-muted rounded-full overflow-hidden">
+      <div className="w-full h-3 bg-muted dark:bg-level-1 rounded-full overflow-hidden shadow-inner">
         <motion.div
-          className="h-full bg-gradient-to-r from-primary to-secondary rounded-full"
+          className="h-full bg-highlight rounded-full"
           initial={{ width: 0 }}
           animate={{ width: `${percentage}%` }}
           transition={{ duration: 0.5, ease: "easeOut" }}

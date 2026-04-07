@@ -36,15 +36,18 @@ export function ListCard({
       whileHover={{ y: -4 }}
       whileTap={{ scale: 0.98 }}
       onClick={() => navigate(`/list/${id}`)}
-      className={`rounded-3xl transition-shadow cursor-pointer
+      className={`rounded-3xl transition-all duration-300 cursor-pointer border
         ${compact ? "p-4" : "p-6"}
-        ${active ? "bg-primary/5 border-2 border-primary" : "bg-card shadow-md hover:shadow-xl"}
+        ${active 
+          ? "bg-muted dark:bg-level-3 border-foreground/30 shadow-xl scale-[1.02]" 
+          : "bg-card border-border shadow-md hover:shadow-xl hover:border-foreground/20"
+        }
       `}
     >
       <div className={compact ? "mb-2" : "mb-4"}>
-        <h3 className={`mb-1 ${compact ? "text-sm font-semibold truncate" : ""}`}>{title}</h3>
+        <h3 className={`mb-1 text-foreground ${compact ? "text-sm font-semibold truncate" : "text-lg font-bold"}`}>{title}</h3>
         <div className="mb-1">
-          <span className={`inline-flex px-2 py-0.5 bg-primary/10 text-primary rounded-full ${compact ? "text-[10px]" : "text-xs py-1"}`}>
+          <span className={`inline-flex px-2 py-0.5 bg-foreground/10 text-foreground font-medium rounded-full ${compact ? "text-[10px]" : "text-xs py-1"}`}>
             {category}
           </span>
         </div>
@@ -62,8 +65,8 @@ export function ListCard({
           animate={{ scale: 1, opacity: 1 }}
           className="mt-3 text-center"
         >
-          <span className="inline-flex items-center gap-1.5 text-sm bg-primary/10 text-primary px-3 py-1.5 rounded-full">
-            🎉 Complete!
+          <span className="inline-flex items-center gap-1.5 text-sm bg-foreground text-background px-3 py-1.5 rounded-full font-bold">
+            DONE
           </span>
         </motion.div>
       )}

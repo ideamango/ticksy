@@ -19,6 +19,7 @@ import { toast } from "sonner";
 import { categories, unitOptions } from "../data/templates";
 import type { Unit } from "../types";
 import { formatLastUpdated, useLists } from "../context/list-context";
+import { ThemeToggle } from "../components/theme-toggle";
 
 export function ListDetail() {
   const { id } = useParams();
@@ -118,43 +119,44 @@ export function ListDetail() {
     : window.location.href;
 
   return (
-    <div className="min-h-screen bg-background pb-40">
+    <div className="min-h-screen bg-background dark:bg-level-1 pb-40 transition-colors duration-300">
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
         {/* Header */}
-        <div className="bg-gradient-to-br from-primary/10 via-secondary/10 to-accent/10 px-4 sm:px-6 pt-6 sm:pt-8 pb-4 sm:pb-6 rounded-b-[2rem] sm:rounded-b-[3rem] sticky top-0 z-10 backdrop-blur-lg mb-6">
+        <div className="bg-card dark:bg-level-2/95 px-4 sm:px-6 pt-6 sm:pt-8 pb-4 sm:pb-6 rounded-b-[2rem] sm:rounded-b-[3rem] sticky top-0 z-10 backdrop-blur-xl mb-6 border-b border-border shadow-md">
           <div className="flex flex-row items-center justify-between gap-2 mb-0">
             <div className="flex items-center gap-2 sm:gap-4 flex-1 min-w-0">
               <motion.button
                 onClick={() => navigate("/")}
-                className="p-2 bg-white/50 hover:bg-white/80 rounded-full transition-colors shrink-0"
+                className="p-2 bg-background hover:bg-muted rounded-full transition-colors shrink-0 border border-border"
                 whileTap={{ scale: 0.9 }}
               >
                 <ChevronLeft className="w-5 h-5" />
               </motion.button>
               
               <div className="min-w-0 flex-1 flex flex-col justify-center">
-                <h2 className="mb-0 text-base sm:text-2xl font-bold block w-full leading-tight line-clamp-2 sm:truncate">{`${list.title} ${list.emoji ?? ""}`.trim()}</h2>
+                <h2 className="mb-0 text-lg sm:text-3xl font-extrabold block w-full leading-tight line-clamp-2 sm:truncate">{`${list.title} ${list.emoji ?? ""}`.trim()}</h2>
                 <p className="text-xs sm:text-base text-muted-foreground truncate block w-full leading-snug">{categoryLabel}</p>
               </div>
             </div>
 
             <div className="flex flex-row items-center gap-1 sm:gap-2 shrink-0">
               <div className="flex items-center gap-1 sm:gap-2 text-[10px] sm:text-xs text-nowrap">
-                <span className="px-3 py-1 bg-primary/20 text-primary rounded-full">
-                  {completedCount}/{totalCount} done
+                <span className="px-3 py-1 bg-highlight text-highlight-foreground font-bold rounded-full shadow-sm">
+                  {completedCount}/{totalCount} DONE
                 </span>
                 {completedCount === totalCount && totalCount > 0 && (
                   <motion.span
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
-                    className="px-3 py-1 bg-accent/20 text-accent-foreground rounded-full"
+                    className="px-3 py-1 bg-highlight text-highlight-foreground rounded-full font-bold shadow-lg"
                   >
-                    🎉 All done!
+                    🎉 ALL DONE!
                   </motion.span>
                 )}
               </div>
 
               <div className="flex gap-2">
+                <ThemeToggle />
                 <motion.button
                   onClick={() => setIsShareModalOpen(true)}
                   className="p-2 hover:bg-white/50 rounded-full transition-colors"
@@ -171,12 +173,12 @@ export function ListDetail() {
                 </motion.button>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <motion.button
-                      className="p-2 hover:bg-white/50 rounded-full transition-colors outline-none cursor-pointer"
-                      whileTap={{ scale: 0.9 }}
-                    >
-                      <MoreVertical className="w-5 h-5" />
-                    </motion.button>
+                      <motion.button
+                        className="p-2 hover:bg-muted dark:hover:bg-level-2 rounded-full transition-colors outline-none cursor-pointer"
+                        whileTap={{ scale: 0.9 }}
+                      >
+                        <MoreVertical className="w-5 h-5 text-foreground" />
+                      </motion.button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="w-48 bg-card rounded-2xl p-2 shadow-xl border-0">
                     <DropdownMenuItem
@@ -261,12 +263,12 @@ export function ListDetail() {
       </div>
 
       {/* Fixed Bottom Add Item Bar */}
-      <div className="fixed bottom-0 left-0 right-0 p-3 sm:p-6 pb-5 sm:pb-8 bg-gradient-to-t from-background via-background to-transparent pointer-events-none z-40">
+      <div className="fixed bottom-0 left-0 right-0 p-3 sm:p-6 pb-5 sm:pb-8 bg-gradient-to-t from-background dark:from-level-1 via-background/80 to-transparent pointer-events-none z-40">
         <div className="max-w-3xl mx-auto pointer-events-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-white dark:bg-card border-2 border-primary/30 focus-within:border-primary shadow-[0_8px_30px_rgb(0,0,0,0.08)] rounded-[2rem] p-1.5 flex items-center transition-colors"
+            className="bg-card dark:bg-level-2 border-2 border-foreground/20 focus-within:border-foreground shadow-2xl rounded-[2rem] p-1.5 flex items-center transition-all"
           >
             <input
               type="text"
@@ -313,13 +315,13 @@ export function ListDetail() {
               className={`
                 w-10 h-10 sm:w-11 sm:h-11 flex items-center justify-center shrink-0 rounded-[1.25rem] transition-all ml-1
                 ${newItemName.trim()
-                  ? "bg-primary text-primary-foreground shadow-sm"
-                  : "bg-muted/50 text-muted-foreground cursor-not-allowed"
+                  ? "bg-highlight text-highlight-foreground shadow-lg"
+                  : "bg-muted text-muted-foreground cursor-not-allowed border border-border"
                 }
               `}
               whileTap={newItemName.trim() ? { scale: 0.95 } : {}}
             >
-              <Plus className="w-5 h-5" strokeWidth={2.5} />
+              <Plus className="w-5 h-5 text-highlight-foreground" strokeWidth={3} />
             </motion.button>
           </motion.div>
         </div>

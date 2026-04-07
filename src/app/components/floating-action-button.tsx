@@ -10,7 +10,7 @@ export function FloatingActionButton({ onClick, label = "Add" }: FloatingActionB
   return (
     <motion.button
       onClick={onClick}
-      className="fixed bottom-6 right-6 sm:right-1/2 sm:translate-x-[calc(50%+12rem)] w-16 h-16 bg-primary text-primary-foreground rounded-full shadow-lg flex items-center justify-center z-50"
+      className="fixed bottom-6 right-6 sm:right-1/2 sm:translate-x-[calc(50%+12rem)] w-16 h-16 bg-primary text-primary-foreground rounded-full shadow-lg flex items-center justify-center z-50 animate-pulse-glow transition-all duration-300"
       whileHover={{ scale: 1.1 }}
       whileTap={{ scale: 0.95 }}
       initial={{ scale: 0, opacity: 0 }}

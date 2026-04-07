@@ -7,6 +7,7 @@ import { FileText, Receipt, Share2, Recycle, Lightbulb, Plus, History, ChevronRi
 import { toast } from "sonner";
 import { categories } from "../data/templates";
 import { formatLastUpdated, useLists } from "../context/list-context";
+import { ThemeToggle } from "../components/theme-toggle";
 import type { CategoryId } from "../types";
 
 export function Dashboard() {
@@ -51,15 +52,20 @@ export function Dashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-background pb-32 font-sans">
-      {/* Top App Bar with Theme Gradient */}
-      <div className="bg-gradient-to-br from-primary/10 via-secondary/10 to-accent/10 px-6 pt-6 sm:pt-8 pb-6 rounded-b-[2rem] sm:rounded-b-[3rem] sticky top-0 z-20 backdrop-blur-lg mb-6 flex flex-col items-center sm:items-start text-center sm:text-left border-b border-border/40 font-sans">
-        <div className="max-w-4xl mx-auto w-full flex flex-col sm:flex-row items-center sm:justify-between gap-2">
+    <div className="min-h-screen bg-background dark:bg-level-1 pb-32 font-sans transition-colors duration-300">
+      {/* Top App Bar with Theme Surface */}
+      <div className="bg-background/80 dark:bg-level-1/80 px-6 pt-6 sm:pt-8 pb-6 rounded-b-[2rem] sm:rounded-b-[3rem] sticky top-0 z-20 backdrop-blur-xl mb-6 flex flex-col items-center sm:items-start text-center sm:text-left border-b border-border font-sans">
+        <div className="max-w-4xl mx-auto w-full flex flex-col sm:flex-row items-center sm:justify-between gap-4">
           <div className="flex items-center gap-2">
-            <CheckSquare className="w-6 h-6 sm:w-8 sm:h-8 text-primary" />
+            <div className="p-1.5 rounded-lg bg-highlight shadow-sm">
+              <CheckSquare className="w-5 h-5 sm:w-6 sm:h-6 text-highlight-foreground" />
+            </div>
             <h1 className="text-xl sm:text-3xl font-extrabold tracking-tight text-foreground">Ticksy</h1>
           </div>
-          <p className="text-muted-foreground font-medium text-xs sm:text-sm">Your lists, synced effortlessly.</p>
+          <div className="flex items-center gap-3">
+            <p className="text-muted-foreground font-medium text-xs sm:text-sm hidden sm:block">Your lists, synced effortlessly.</p>
+            <ThemeToggle />
+          </div>
         </div>
       </div>
 
@@ -68,15 +74,15 @@ export function Dashboard() {
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-white dark:bg-card border border-slate-100 dark:border-border rounded-[2rem] p-6 sm:p-8 shadow-sm mb-6 mt-2"
+          className="bg-card border border-border rounded-[2rem] p-6 sm:p-8 shadow-md mb-6 mt-2"
         >
           <div className="flex items-center gap-3 mb-3">
-            <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 dark:text-slate-100">
+            <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
               Still texting grocery lists?
             </h2>
-            <Receipt className="w-6 h-6 sm:w-8 sm:h-8 text-blue-400" />
+            <Receipt className="w-6 h-6 sm:w-8 sm:h-8 text-muted-foreground" />
           </div>
-          <p className="text-slate-500 dark:text-slate-400 text-base sm:text-lg leading-relaxed max-w-xl">
+          <p className="text-muted-foreground text-base sm:text-lg leading-relaxed max-w-xl">
             Make your own smart, shareable list — save time, avoid repeats, and shop stress-free.
           </p>
         </motion.div>
@@ -89,41 +95,41 @@ export function Dashboard() {
           className="grid grid-cols-3 gap-2 sm:gap-4 mb-8"
         >
           {/* Feature 1 */}
-          <div className="bg-amber-50 dark:bg-amber-950/20 rounded-2xl sm:rounded-3xl p-2 sm:p-6 flex flex-col h-full border border-amber-100 dark:border-amber-900/30 text-center items-center">
-            <h3 className="font-bold text-amber-900 dark:text-amber-200 text-[10px] sm:text-lg mb-1 sm:mb-2 leading-tight">
+          <div className="bg-card rounded-2xl sm:rounded-3xl p-2 sm:p-6 flex flex-col h-full border border-border text-center items-center shadow-md">
+            <h3 className="font-bold text-foreground text-[10px] sm:text-lg mb-1 sm:mb-2 leading-tight">
               Get rid of texting headache
             </h3>
-            <p className="text-[9px] sm:text-sm text-amber-700 dark:text-amber-400/80 mb-2 sm:mb-6 flex-1 leading-tight line-clamp-3 sm:line-clamp-none">
+            <p className="text-[9px] sm:text-sm text-muted-foreground mb-2 sm:mb-6 flex-1 leading-tight line-clamp-3 sm:line-clamp-none">
               Share effortlessly with a link
             </p>
-            <div className="w-10 h-10 sm:w-24 sm:h-24 bg-white dark:bg-card rounded-xl sm:rounded-2xl flex items-center justify-center shadow-sm">
-              <Share2 className="w-5 h-5 sm:w-10 sm:h-10 text-amber-500" />
+            <div className="w-10 h-10 sm:w-24 sm:h-24 bg-background dark:bg-level-1 rounded-xl sm:rounded-2xl flex items-center justify-center shadow-inner">
+              <Share2 className="w-5 h-5 sm:w-10 sm:h-10 text-muted-foreground" />
             </div>
           </div>
           
           {/* Feature 2 */}
-          <div className="bg-blue-50 dark:bg-blue-950/20 rounded-2xl sm:rounded-3xl p-2 sm:p-6 flex flex-col h-full border border-blue-100 dark:border-blue-900/30 text-center items-center">
-            <h3 className="font-bold text-blue-900 dark:text-blue-200 text-[10px] sm:text-lg mb-1 sm:mb-2 leading-tight">
+          <div className="bg-card rounded-2xl sm:rounded-3xl p-2 sm:p-6 flex flex-col h-full border border-border text-center items-center shadow-md">
+            <h3 className="font-bold text-foreground text-[10px] sm:text-lg mb-1 sm:mb-2 leading-tight">
               Reuse and update past lists
             </h3>
-            <p className="text-[9px] sm:text-sm text-blue-700 dark:text-blue-400/80 mb-2 sm:mb-6 flex-1 leading-tight line-clamp-3 sm:line-clamp-none">
+            <p className="text-[9px] sm:text-sm text-muted-foreground mb-2 sm:mb-6 flex-1 leading-tight line-clamp-3 sm:line-clamp-none">
               Stop rewriting the same items
             </p>
-            <div className="w-10 h-10 sm:w-24 sm:h-24 bg-white dark:bg-card rounded-xl sm:rounded-2xl flex items-center justify-center shadow-sm">
-              <Recycle className="w-5 h-5 sm:w-10 sm:h-10 text-blue-500" />
+            <div className="w-10 h-10 sm:w-24 sm:h-24 bg-background dark:bg-level-1 rounded-xl sm:rounded-2xl flex items-center justify-center shadow-inner">
+              <Recycle className="w-5 h-5 sm:w-10 sm:h-10 text-muted-foreground" />
             </div>
           </div>
 
           {/* Feature 3 */}
-          <div className="bg-emerald-50 dark:bg-emerald-950/20 rounded-2xl sm:rounded-3xl p-2 sm:p-6 flex flex-col h-full border border-emerald-100 dark:border-emerald-900/30 text-center items-center">
-            <h3 className="font-bold text-emerald-900 dark:text-emerald-200 text-[10px] sm:text-lg mb-1 sm:mb-2 leading-tight">
+          <div className="bg-card rounded-2xl sm:rounded-3xl p-2 sm:p-6 flex flex-col h-full border border-border text-center items-center shadow-md">
+            <h3 className="font-bold text-foreground text-[10px] sm:text-lg mb-1 sm:mb-2 leading-tight">
               Buy smarter with predictions
             </h3>
-            <p className="text-[9px] sm:text-sm text-emerald-700 dark:text-emerald-400/80 mb-2 sm:mb-6 flex-1 leading-tight line-clamp-3 sm:line-clamp-none">
+            <p className="text-[9px] sm:text-sm text-muted-foreground mb-2 sm:mb-6 flex-1 leading-tight line-clamp-3 sm:line-clamp-none">
               Know what you likely need
             </p>
-            <div className="w-10 h-10 sm:w-24 sm:h-24 bg-white dark:bg-card rounded-xl sm:rounded-2xl flex items-center justify-center shadow-sm">
-              <Lightbulb className="w-5 h-5 sm:w-10 sm:h-10 text-emerald-500" />
+            <div className="w-10 h-10 sm:w-24 sm:h-24 bg-background dark:bg-level-1 rounded-xl sm:rounded-2xl flex items-center justify-center shadow-inner">
+              <Lightbulb className="w-5 h-5 sm:w-10 sm:h-10 text-muted-foreground" />
             </div>
           </div>
         </motion.div>
@@ -139,30 +145,30 @@ export function Dashboard() {
             onClick={() => setIsCreateModalOpen(true)} 
             className="flex flex-col items-center gap-3 group"
           >
-            <div className="w-16 h-16 rounded-full bg-purple-100 dark:bg-purple-900/40 text-purple-600 dark:text-purple-300 flex items-center justify-center group-hover:scale-105 group-hover:bg-purple-200 dark:group-hover:bg-purple-800/60 transition-all duration-200">
-              <Plus className="w-7 h-7" strokeWidth={2.5} />
+            <div className="w-16 h-16 rounded-full bg-highlight text-highlight-foreground flex items-center justify-center group-hover:scale-110 transition-all duration-300 shadow-lg">
+              <Plus className="w-7 h-7" strokeWidth={3} />
             </div>
-            <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">New List</span>
+            <span className="text-sm font-bold text-foreground">New List</span>
           </button>
           
           <button 
             onClick={handleReuseLast}
             className="flex flex-col items-center gap-3 group"
           >
-            <div className="w-16 h-16 rounded-full bg-purple-100 dark:bg-purple-900/40 text-purple-600 dark:text-purple-300 flex items-center justify-center group-hover:scale-105 group-hover:bg-purple-200 dark:group-hover:bg-purple-800/60 transition-all duration-200">
-              <History className="w-7 h-7" strokeWidth={2.5} />
+            <div className="w-16 h-16 rounded-full bg-highlight text-highlight-foreground flex items-center justify-center group-hover:scale-110 transition-all duration-300 shadow-lg">
+              <History className="w-7 h-7" strokeWidth={3} />
             </div>
-            <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">Reuse Last</span>
+            <span className="text-sm font-bold text-foreground">Reuse Last</span>
           </button>
 
           <button 
             onClick={() => toast.info("Check back soon to see lists shared with you directly!")}
             className="flex flex-col items-center gap-3 group"
           >
-            <div className="w-16 h-16 rounded-full bg-purple-100 dark:bg-purple-900/40 text-purple-600 dark:text-purple-300 flex items-center justify-center group-hover:scale-105 group-hover:bg-purple-200 dark:group-hover:bg-purple-800/60 transition-all duration-200">
-              <Share2 className="w-7 h-7" strokeWidth={2.5} />
+            <div className="w-16 h-16 rounded-full bg-highlight text-highlight-foreground flex items-center justify-center group-hover:scale-110 transition-all duration-300 shadow-lg">
+              <Share2 className="w-7 h-7" strokeWidth={3} />
             </div>
-            <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">Shared with Me</span>
+            <span className="text-sm font-bold text-foreground">Shared with Me</span>
           </button>
         </motion.div>
 
@@ -172,19 +178,19 @@ export function Dashboard() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
           onClick={() => navigate('/templates')}
-          className="bg-purple-50 dark:bg-purple-900/20 border border-purple-100 dark:border-purple-800/30 rounded-3xl p-5 sm:p-6 cursor-pointer hover:shadow-md hover:bg-purple-100 dark:hover:bg-purple-900/30 transition-all mb-12 flex items-center gap-4 group"
+          className="bg-card border border-border rounded-3xl p-5 sm:p-6 cursor-pointer shadow-md hover:shadow-lg hover:-translate-y-1 transition-all mb-12 flex items-center gap-4 group"
         >
-          <div className="w-12 h-12 bg-purple-200/50 dark:bg-purple-800/40 rounded-full flex items-center justify-center shrink-0">
-            <Lightbulb className="w-6 h-6 text-purple-700 dark:text-purple-300" strokeWidth={2.5} />
+          <div className="w-12 h-12 bg-muted rounded-full flex items-center justify-center shrink-0">
+            <Lightbulb className="w-6 h-6 text-foreground" strokeWidth={2.5} />
           </div>
           <div className="flex-1">
-            <h3 className="font-bold text-lg text-purple-900 dark:text-purple-100 mb-1">Smart Suggestions</h3>
-            <p className="text-purple-800/70 dark:text-purple-200/70 text-sm sm:text-base leading-snug">
+            <h3 className="font-bold text-lg text-foreground mb-1">Smart Suggestions</h3>
+            <p className="text-muted-foreground text-sm sm:text-base leading-snug">
               Based on your past lists, we've got ideas on what you'll likely need next.
             </p>
           </div>
           <div className="shrink-0 w-8 h-8 flex items-center justify-center rounded-full group-hover:translate-x-1 transition-transform">
-            <ChevronRight className="w-6 h-6 text-purple-700 dark:text-purple-300" strokeWidth={2.5} />
+            <ChevronRight className="w-6 h-6 text-foreground" strokeWidth={2.5} />
           </div>
         </motion.div>
 
@@ -195,10 +201,10 @@ export function Dashboard() {
           transition={{ delay: 0.4 }}
           className="mb-6 flex justify-between items-center"
         >
-          <h2 className="text-xl font-bold text-slate-800 dark:text-slate-100">Your Lists</h2>
+          <h2 className="text-xl font-bold text-foreground">Your Lists</h2>
           <button 
             onClick={() => navigate("/templates")}
-            className="text-sm font-medium text-purple-600 dark:text-purple-400 flex items-center gap-1 hover:underline"
+            className="text-sm font-medium text-foreground/80 flex items-center gap-1 hover:underline"
           >
             <FileText className="w-4 h-4" />
             Browse templates
@@ -246,9 +252,9 @@ export function Dashboard() {
       <div className="sm:hidden fixed bottom-8 right-6 z-50">
         <button
           onClick={() => setIsCreateModalOpen(true)}
-          className="w-14 h-14 bg-purple-600 text-white rounded-full flex items-center justify-center shadow-xl hover:bg-purple-700 active:scale-95 transition-all ring-4 ring-purple-600/20"
+          className="w-16 h-16 bg-highlight text-highlight-foreground rounded-full flex items-center justify-center shadow-2xl active:scale-95 transition-all"
         >
-          <Plus className="w-6 h-6" strokeWidth={2.5} />
+          <Plus className="w-8 h-8" strokeWidth={3} />
         </button>
       </div>
 

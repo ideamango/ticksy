@@ -46,7 +46,7 @@ export function CreateListModal({ isOpen, onClose, onCreate }: CreateListModalPr
         exit={{ y: "100%", opacity: 0 }}
         transition={{ type: "spring", damping: 30, stiffness: 300 }}
         onClick={(e) => e.stopPropagation()}
-        className="bg-card rounded-3xl p-6 w-full max-w-md shadow-2xl"
+        className="bg-popover dark:bg-level-3 rounded-3xl p-6 w-full max-w-md shadow-2xl border border-border"
       >
         <div className="flex items-center justify-between mb-4">
           <h3>Add List</h3>
@@ -58,19 +58,19 @@ export function CreateListModal({ isOpen, onClose, onCreate }: CreateListModalPr
           </button>
         </div>
 
-        <div className="flex bg-muted/50 p-1 rounded-xl mb-6">
+        <div className="flex bg-muted p-1 rounded-xl mb-6">
           <button
             onClick={() => setActiveTab("new")}
-            className={`flex-1 py-2 text-sm font-medium rounded-lg transition-all ${
-              activeTab === "new" ? "bg-white shadow-sm text-foreground" : "text-muted-foreground hover:text-foreground"
+            className={`flex-1 py-2 text-sm font-bold rounded-lg transition-all ${
+              activeTab === "new" ? "bg-highlight shadow-md text-highlight-foreground" : "text-muted-foreground hover:text-foreground"
             }`}
           >
             Create New
           </button>
           <button
             onClick={() => setActiveTab("existing")}
-            className={`flex-1 py-2 text-sm font-medium rounded-lg transition-all ${
-              activeTab === "existing" ? "bg-white shadow-sm text-foreground" : "text-muted-foreground hover:text-foreground"
+            className={`flex-1 py-2 text-sm font-bold rounded-lg transition-all ${
+              activeTab === "existing" ? "bg-highlight shadow-md text-highlight-foreground" : "text-muted-foreground hover:text-foreground"
             }`}
           >
             Use Existing
@@ -100,16 +100,16 @@ export function CreateListModal({ isOpen, onClose, onCreate }: CreateListModalPr
                     key={category.id}
                     onClick={() => setSelectedCategory(category.id)}
                     className={`
-                      p-3 rounded-2xl border-2 transition-all text-center
+                      p-3 rounded-2xl border transition-all text-center
                       ${selectedCategory === category.id
-                        ? "border-primary bg-primary/10"
-                        : "border-muted bg-white"
+                        ? "border-transparent bg-highlight text-highlight-foreground shadow-lg scale-105"
+                        : "border-border bg-background dark:bg-level-2 text-foreground"
                       }
                     `}
                     whileTap={{ scale: 0.95 }}
                   >
                     <div className="text-2xl mb-1">{category.emoji}</div>
-                    <div className="text-xs">{category.label}</div>
+                    <div className="text-xs font-bold">{category.label}</div>
                   </motion.button>
                 ))}
               </div>
@@ -119,9 +119,9 @@ export function CreateListModal({ isOpen, onClose, onCreate }: CreateListModalPr
               onClick={handleCreate}
               disabled={!name.trim()}
               className={`
-                w-full py-3 px-4 rounded-2xl font-semibold transition-all
+                w-full py-4 px-4 rounded-2xl font-bold transition-all shadow-xl
                 ${name.trim()
-                  ? "bg-primary text-primary-foreground"
+                  ? "bg-highlight text-highlight-foreground"
                   : "bg-muted text-muted-foreground cursor-not-allowed"
                 }
               `}
@@ -145,13 +145,13 @@ export function CreateListModal({ isOpen, onClose, onCreate }: CreateListModalPr
                       setSelectedSource(l);
                       setIsReuseModalOpen(true);
                     }}
-                    className="w-full text-left p-4 rounded-2xl border-2 border-transparent bg-input-background hover:bg-muted/50 hover:border-primary/20 transition-all flex justify-between items-center group"
+                    className="w-full text-left p-4 rounded-2xl border border-border bg-background dark:bg-level-2 hover:bg-muted transition-all flex justify-between items-center group"
                   >
                     <div>
-                      <div className="font-medium text-foreground">{`${l.title} ${l.emoji ?? ""}`.trim()}</div>
+                      <div className="font-bold text-foreground">{`${l.title} ${l.emoji ?? ""}`.trim()}</div>
                       <div className="text-xs text-muted-foreground mt-1">{l.items.length} items</div>
                     </div>
-                    <div className="text-primary opacity-0 group-hover:opacity-100 transition-opacity text-sm font-medium">
+                    <div className="text-foreground opacity-0 group-hover:opacity-100 transition-opacity text-sm font-bold">
                       Select
                     </div>
                   </button>
