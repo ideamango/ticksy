@@ -36,7 +36,7 @@ export function UseTemplateModal({ isOpen, onClose, template, onCreate }: UseTem
         exit={{ y: "100%", opacity: 0 }}
         transition={{ type: "spring", damping: 30, stiffness: 300 }}
         onClick={(e) => e.stopPropagation()}
-        className="bg-card rounded-3xl p-6 w-full max-w-md shadow-2xl relative"
+        className="bg-card rounded-xl p-6 w-full max-w-md shadow-2xl relative"
       >
         <div className="flex items-center justify-between mb-6">
           <h3 className="flex items-center gap-2">
@@ -61,7 +61,7 @@ export function UseTemplateModal({ isOpen, onClose, template, onCreate }: UseTem
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="w-full px-4 py-3 rounded-2xl bg-input-background border-0 focus:ring-2 focus:ring-primary outline-none transition-all"
+            className="w-full px-4 py-3 rounded-lg bg-[var(--modal-input-bg)] border border-border text-foreground outline-none focus:ring-2 focus:ring-ring transition-all"
             autoFocus
             onKeyDown={(e) => e.key === "Enter" && handleCreate()}
           />
@@ -71,12 +71,13 @@ export function UseTemplateModal({ isOpen, onClose, template, onCreate }: UseTem
           onClick={handleCreate}
           disabled={!name.trim()}
           className={`
-            w-full py-3 px-4 rounded-2xl font-semibold transition-all
+            w-full py-4 px-4 font-bold transition-all shadow-md mt-4
             ${name.trim()
-              ? "bg-primary text-primary-foreground"
+              ? "bg-highlight text-highlight-foreground"
               : "bg-muted text-muted-foreground cursor-not-allowed"
             }
           `}
+          style={{ borderRadius: "var(--btn-border-radius)" }}
           whileTap={name.trim() ? { scale: 0.98 } : {}}
         >
           Create List

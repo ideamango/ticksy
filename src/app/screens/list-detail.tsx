@@ -56,7 +56,8 @@ export function ListDetail() {
           <p className="text-muted-foreground mb-6">This list may have been removed.</p>
           <button
             onClick={() => navigate("/")}
-            className="px-5 py-3 bg-primary text-primary-foreground rounded-2xl"
+            className="px-5 py-3 bg-highlight text-highlight-foreground font-bold shadow-md"
+            style={{ borderRadius: "var(--btn-border-radius)" }}
           >
             Back to Lists
           </button>
@@ -122,7 +123,7 @@ export function ListDetail() {
     <div className="min-h-screen bg-background dark:bg-level-1 pb-40 transition-colors duration-300">
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
         {/* Header */}
-        <div className="bg-card dark:bg-level-2/95 px-4 sm:px-6 pt-6 sm:pt-8 pb-4 sm:pb-6 rounded-b-[2rem] sm:rounded-b-[3rem] sticky top-0 z-10 backdrop-blur-xl mb-6 border-b border-border shadow-md">
+        <div className="bg-card dark:bg-level-2/95 px-4 sm:px-6 pt-6 sm:pt-8 pb-4 sm:pb-6 rounded-b-xl sticky top-0 z-30 backdrop-blur-xl mb-6 border-b border-border shadow-md">
           <div className="flex flex-row items-center justify-between gap-2 mb-0">
             <div className="flex items-center gap-2 sm:gap-4 flex-1 min-w-0">
               <motion.button
@@ -180,7 +181,7 @@ export function ListDetail() {
                         <MoreVertical className="w-5 h-5 text-foreground" />
                       </motion.button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-48 bg-card rounded-2xl p-2 shadow-xl border-0">
+                  <DropdownMenuContent align="end" className="w-48 bg-card rounded-xl p-2 shadow-xl border border-border">
                     <DropdownMenuItem
                       onClick={() => setIsEditModalOpen(true)}
                       className="gap-2 p-3 rounded-xl cursor-pointer hover:bg-muted/50 focus:bg-muted/50"
@@ -203,10 +204,10 @@ export function ListDetail() {
         </div>
 
         {/* Main grid: left lists sidebar + right detail */}
-        <div className="relative z-20 grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-6 px-0 -mt-6">
-          <aside className="hidden lg:block px-2">
+        <div className="relative z-20 grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-6 px-0 pb-12 sm:pb-16">
+          <aside className="hidden lg:block -ml-1">
             {/* Sidebar lists (scrollable) */}
-            <div className="max-h-[calc(100vh-6rem)] overflow-auto space-y-3 pr-2">
+            <div className="max-h-[calc(100vh-8rem)] overflow-auto space-y-3 pl-1 pr-4 py-2 custom-scrollbar">
               {/** Render small list overview so users can switch lists on wide screens */}
               {lists.map((l, idx) => (
                 <ListCard
@@ -263,12 +264,12 @@ export function ListDetail() {
       </div>
 
       {/* Fixed Bottom Add Item Bar */}
-      <div className="fixed bottom-0 left-0 right-0 p-3 sm:p-6 pb-5 sm:pb-8 bg-gradient-to-t from-background dark:from-level-1 via-background/80 to-transparent pointer-events-none z-40">
+      <div className="fixed bottom-0 left-0 lg:left-[280px] right-0 p-3 sm:p-6 pb-5 sm:pb-8 bg-gradient-to-t from-background dark:from-level-1 via-background/80 to-transparent pointer-events-none z-40">
         <div className="max-w-3xl mx-auto pointer-events-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-card dark:bg-level-2 border-2 border-foreground/20 focus-within:border-foreground shadow-2xl rounded-[2rem] p-1.5 flex items-center transition-all"
+            className="bg-card dark:backdrop-blur-xl border border-border focus-within:border-foreground/50 shadow-2xl rounded-xl p-1.5 flex items-center transition-all"
           >
             <input
               type="text"
@@ -313,15 +314,16 @@ export function ListDetail() {
               onClick={handleAddItem}
               disabled={!newItemName.trim()}
               className={`
-                w-10 h-10 sm:w-11 sm:h-11 flex items-center justify-center shrink-0 rounded-[1.25rem] transition-all ml-1
+                w-10 h-10 sm:w-11 sm:h-11 flex items-center justify-center shrink-0 transition-all ml-1
                 ${newItemName.trim()
                   ? "bg-highlight text-highlight-foreground shadow-lg"
                   : "bg-muted text-muted-foreground cursor-not-allowed border border-border"
                 }
               `}
+              style={{ borderRadius: "var(--btn-border-radius)" }}
               whileTap={newItemName.trim() ? { scale: 0.95 } : {}}
             >
-              <Plus className="w-5 h-5 text-highlight-foreground" strokeWidth={3} />
+              <Plus className="w-5 h-5 text-background" strokeWidth={2} />
             </motion.button>
           </motion.div>
         </div>

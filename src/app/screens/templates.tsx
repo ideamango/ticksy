@@ -1,26 +1,33 @@
 import { motion } from "motion/react";
 import { useNavigate } from "react-router";
-import { ChevronLeft, Copy } from "lucide-react";
+import { ChevronLeft, Plus } from "lucide-react";
 import { toast } from "sonner";
 import { categories, templates } from "../data/templates";
 import { useLists } from "../context/list-context";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { UseTemplateModal } from "../components/use-template-modal";
-import { CreateTemplateModal } from "../components/create-template-modal";
+import { TemplateSidebarCard } from "../components/template-sidebar-card";
+import { InlineViewTemplate } from "../components/inline-view-template";
+import { InlineCreateTemplate } from "../components/inline-create-template";
+import { ThemeToggle } from "../components/theme-toggle";
 import type { ListTemplate } from "../types";
 
 export function Templates() {
   const navigate = useNavigate();
   const { createFromTemplate, customTemplates, createTemplate } = useLists();
 
-  const [selectedTemplate, setSelectedTemplate] = useState<ListTemplate | null>(null);
+  const allTemplates = useMemo(() => [...customTemplates, ...templates], [customTemplates]);
+  const [selectedTemplateId, setSelectedTemplateId] = useState<string | null>(allTemplates[0]?.id || null);
+  const [isCreating, setIsCreating] = useState(false);
   const [isUseModalOpen, setIsUseModalOpen] = useState(false);
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [templateToUse, setTemplateToUse] = useState<ListTemplate | null>(null);
 
-  const allTemplates = [...customTemplates, ...templates];
+  const selectedTemplate = useMemo(() => 
+    allTemplates.find(t => t.id === selectedTemplateId) || allTemplates[0]
+  , [allTemplates, selectedTemplateId]);
 
-  const handleUseTemplateClick = (template: ListTemplate) => {
-    setSelectedTemplate(template);
+  const handleUseTemplateRequest = (template: ListTemplate) => {
+    setTemplateToUse(template);
     setIsUseModalOpen(true);
   };
 
@@ -37,100 +44,106 @@ export function Templates() {
   const handleCreateNewTemplate = (templateData: any) => {
     createTemplate(templateData);
     toast.success("Template created successfully!");
+    setIsCreating(false);
+    // Select the newly created template (it should be at the start of customTemplates)
+    if (customTemplates.length > 0) {
+      setSelectedTemplateId(customTemplates[0].id);
+    }
   };
 
   return (
-    <div className="min-h-screen bg-background pb-24">
-      {/* Responsive container for desktop */}
+    <div className="min-h-screen bg-background dark:bg-level-1 pb-40 transition-colors duration-300">
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
-        {/* Header */}
-        <div className="bg-gradient-to-br from-primary/10 via-secondary/10 to-accent/10 px-6 pt-6 sm:pt-8 pb-6 rounded-b-[2rem] sm:rounded-b-[3rem] sticky top-0 z-10 backdrop-blur-lg mb-6">
-          <div className="flex items-center gap-4 mb-1">
-            <motion.button
-              onClick={() => navigate("/")}
-              className="p-2 bg-white/50 hover:bg-white/80 rounded-full transition-colors flex-shrink-0"
-              whileTap={{ scale: 0.9 }}
-            >
-              <ChevronLeft className="w-5 h-5" />
-            </motion.button>
-            <h2 className="text-xl sm:text-2xl font-bold mb-0">Templates</h2>
+        {/* Modern Sticky Header */}
+        <div className="bg-card dark:bg-level-2/95 px-4 sm:px-6 pt-6 sm:pt-8 pb-4 sm:pb-6 rounded-b-xl sticky top-0 z-30 backdrop-blur-xl mb-6 border-b border-border shadow-md">
+          <div className="flex flex-row items-center justify-between gap-2 mb-0">
+            <div className="flex items-center gap-2 sm:gap-4 flex-1 min-w-0">
+              <motion.button
+                onClick={() => navigate("/")}
+                className="p-2 bg-background hover:bg-muted rounded-full transition-colors shrink-0 border border-border"
+                whileTap={{ scale: 0.9 }}
+              >
+                <ChevronLeft className="w-5 h-5" />
+              </motion.button>
+              
+              <div className="min-w-0 flex-1 flex flex-col justify-center">
+                <h2 className="mb-0 text-lg sm:text-3xl font-extrabold block w-full leading-tight truncate">Templates</h2>
+                <p className="text-xs sm:text-base text-muted-foreground truncate block w-full leading-snug">
+                  {isCreating ? "Creating new template" : "Start with a ready-made list template"}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex flex-row items-center gap-2 shrink-0">
+              <ThemeToggle />
+            </div>
           </div>
-          <p className="text-muted-foreground text-sm sm:text-base ml-12 sm:ml-14">
-            Start with a ready-made list template
-          </p>
         </div>
 
-        <div className="mt-6">
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {allTemplates.map((template, index) => (
-              <motion.div
-                key={template.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}
-                className="bg-white rounded-3xl p-6 shadow-md hover:shadow-xl transition-all cursor-pointer group"
-              >
-                <div className="mb-4">
-                  <div className="text-4xl mb-3">{template.emoji}</div>
-                  <h3 className="mb-1">{template.name}</h3>
-                  <p className="text-sm text-muted-foreground mb-2">
-                    {template.description}
-                  </p>
-                  <div className="flex items-center gap-2 text-xs">
-                    <span className="px-2 py-1 bg-primary/10 text-primary rounded-full">
-                      {categories.find((item) => item.id === template.categoryId)?.label ?? "Other"}
-                    </span>
-                    <span className="text-muted-foreground">
-                      {template.items.length} items
-                    </span>
-                  </div>
+        {/* Split Layout: Sidebar + main panel */}
+        <div className="relative z-20 grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-6 px-0">
+          <aside className="hidden lg:block -ml-1">
+            <div className="flex flex-col max-h-[calc(100vh-10rem)] h-full">
+              <div className="flex-1 overflow-auto space-y-3 pl-1 pr-4 py-2 custom-scrollbar">
+                {allTemplates.map((template) => (
+                  <TemplateSidebarCard
+                    key={template.id}
+                    id={template.id}
+                    name={template.name}
+                    emoji={template.emoji}
+                    category={categories.find((c) => c.id === template.categoryId)?.label ?? "Other"}
+                    itemCount={template.items.length}
+                    active={selectedTemplateId === template.id && !isCreating}
+                    onClick={() => {
+                      setSelectedTemplateId(template.id);
+                      setIsCreating(false);
+                    }}
+                  />
+                ))}
+              </div>
+              
+              {!isCreating && (
+                <div className="mt-4 pr-4">
+                  <motion.button
+                    onClick={() => setIsCreating(true)}
+                    className="w-full py-4 bg-highlight text-highlight-foreground rounded-xl font-bold flex items-center justify-center gap-2 shadow-lg hover:shadow-xl transition-all"
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    <Plus className="w-5 h-5" />
+                    New Template
+                  </motion.button>
                 </div>
+              )}
+            </div>
+          </aside>
 
-                <motion.button
-                  onClick={() => handleUseTemplateClick(template)}
-                  className="w-full py-3 px-4 rounded-2xl bg-primary text-primary-foreground font-semibold sm:opacity-0 sm:group-hover:opacity-100 transition-all flex items-center justify-center gap-2"
-                  whileTap={{ scale: 0.95 }}
-                >
-                  <Copy className="w-4 h-4" />
-                  Use Template
-                </motion.button>
-              </motion.div>
-            ))}
-          </div>
-
-          {/* Custom Template Card */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: templates.length * 0.1 }}
-            className="mt-6 bg-gradient-to-br from-accent/20 to-secondary/20 rounded-3xl p-6 text-center"
-          >
-            <div className="text-4xl mb-3">✨</div>
-            <h3 className="mb-2">Create Your Own Template</h3>
-            <p className="text-sm text-muted-foreground mb-4">
-              Save any list as a reusable template
-            </p>
-            <motion.button
-              onClick={() => setIsCreateModalOpen(true)}
-              className="px-6 py-2 rounded-2xl bg-primary text-primary-foreground font-semibold hover:bg-primary/80 transition-colors"
-              whileTap={{ scale: 0.95 }}
-            >
-              Create New Template
-            </motion.button>
-          </motion.div>
+          <main className="px-2 relative">
+            {isCreating ? (
+              <InlineCreateTemplate 
+                onCancel={() => setIsCreating(false)} 
+                onCreate={handleCreateNewTemplate}
+              />
+            ) : selectedTemplate ? (
+              <InlineViewTemplate 
+                template={selectedTemplate} 
+                onUse={handleUseTemplateRequest}
+              />
+            ) : (
+              <div className="h-full flex flex-col items-center justify-center py-20 text-center text-muted-foreground bg-card/50 rounded-xl border border-dashed border-border">
+                <div className="text-6xl mb-4">📭</div>
+                <h3 className="mb-2">No template selected</h3>
+                <p>Select a template from the sidebar or create a new one.</p>
+              </div>
+            )}
+          </main>
         </div>
       </div>
-      
+
       <UseTemplateModal
         isOpen={isUseModalOpen}
         onClose={() => setIsUseModalOpen(false)}
-        template={selectedTemplate}
+        template={templateToUse}
         onCreate={handleCreateListFromTemplate}
-      />
-      <CreateTemplateModal
-        isOpen={isCreateModalOpen}
-        onClose={() => setIsCreateModalOpen(false)}
-        onCreate={handleCreateNewTemplate}
       />
     </div>
   );

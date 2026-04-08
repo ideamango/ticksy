@@ -42,7 +42,15 @@
   --success: #1A1A1A; /* Monochromatic success */
   --success-foreground: #FFFFFF;
   
-  --radius: 1.25rem;
+  --radius: 0.75rem;
+
+  /* Brand Theme Tokens */
+  --modal-input-bg: #FFFFFF;             /* Input row bg in modals (light) */
+  --modal-item-bg: #F5F2ED;              /* Existing list item row bg (light) */
+  --checkbox-highlight: #FDCA8C;         /* Brand checkbox accent color */
+  --btn-border-radius: 0.5rem;            /* Softer modern roundness for buttons */
+  --cancel-btn-border: rgba(0,0,0,0.25); /* Visible border on cancel button */
+  --list-item-gap: 0.25rem;             /* Compact gap between list items */
   --sidebar: #F5F2ED;
   --sidebar-foreground: #1A1A1A;
   --sidebar-primary: #1A1A1A;
@@ -58,14 +66,14 @@
 }
 
 .dark {
-  /* Monochromatic Dark: Eerie Black & Platinum Hierarchy */
-  --background: #050505; /* Level 0: Darkest Background */
-  --foreground: #E0E0E0; /* Platinum Grey */
+  /* Headless UI Dark: Pure Black & High Contrast */
+  --background: #000000; /* Level 0: Deepest Background */
+  --foreground: #FFFFFF; /* High contrast white */
   
   /* Shade Hierarchy */
-  --level-1: #121212; /* Eerie Black (Dashboard Surface) */
-  --level-2: #1A1A1A; /* Medium Shade (Cards/Panels) */
-  --level-3: #2C2C2C; /* Lightest Shade (Pop-ups/Modals) */
+  --level-1: rgba(255, 255, 255, 0.03); /* Subtle backdrop */
+  --level-2: #18181B; /* Zinc-900 (Cards/Panels) */
+  --level-3: #27272A; /* Zinc-800 (Pop-ups/Modals) */
 
   --card: var(--level-2);
   --card-foreground: #E0E0E0;
@@ -73,29 +81,38 @@
   --popover: var(--level-3);
   --popover-foreground: #E0E0E0;
   
-  /* Primary: Platinum */
-  --primary: #E0E0E0;
-  --primary-foreground: #050505;
+  /* Primary: White */
+  --primary: #FFFFFF;
+  --primary-foreground: #000000;
   
-  /* Secondary: Silver */
-  --secondary: #A0A0A0;
-  --secondary-foreground: #050505;
+  /* Secondary: Muted */
+  --secondary: rgba(255, 255, 255, 0.1);
+  --secondary-foreground: #FFFFFF;
   
-  /* Accent: Medium Gray */
-  --accent: #4A4A4A;
-  --accent-foreground: #E0E0E0;
+  /* Accent: Hover state */
+  --accent: rgba(255, 255, 255, 0.2);
+  --accent-foreground: #FFFFFF;
   
-  --muted: #1A1A1A;
-  --muted-foreground: #B0B0B0;
+  --muted: rgba(255, 255, 255, 0.05);
+  --muted-foreground: #A1A1AA; /* Zinc-400 */
   
   --destructive: #ef4444;
   --destructive-foreground: #FFFFFF;
   
-  --border: rgba(255, 255, 255, 0.15);
+  /* Sharper borders typical of Headless UI */
+  --border: rgba(255, 255, 255, 0.1);
   --input: transparent;
-  --input-background: #121212;
-  --switch-background: #4A4A4A;
-  --ring: rgba(224, 224, 224, 0.2);
+  --input-background: rgba(255, 255, 255, 0.03);
+  --switch-background: rgba(255, 255, 255, 0.1);
+  --ring: rgba(255, 255, 255, 0.3);
+
+  /* Brand Theme Tokens (dark overrides) */
+  --modal-input-bg: #27272A;             /* Input row bg in modals (dark) */
+  --modal-item-bg: #27272A;              /* Existing list item row bg (dark) */
+  --checkbox-highlight: #FDCA8C;         /* Brand checkbox accent (same vibrant) */
+  --btn-border-radius: 0.5rem;
+  --cancel-btn-border: rgba(255,255,255,0.25);
+  --list-item-gap: 0.25rem;
   --font-weight-medium: 500;
   --font-weight-normal: 400;
   
@@ -162,11 +179,6 @@
   --background-image-highlight: var(--highlight);
   --color-highlight-foreground: var(--highlight-foreground);
 
-  /* Deep shadows for floating layers */
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.5);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.6), 0 2px 4px -1px rgba(0, 0, 0, 0.5);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.7), 0 4px 6px -2px rgba(0, 0, 0, 0.5);
-  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.8), 0 10px 10px -5px rgba(0, 0, 0, 0.6);
 }
 
 @layer base {
@@ -176,6 +188,13 @@
 
   body {
     @apply bg-background text-foreground transition-colors duration-300;
+  }
+
+  .dark body {
+    background-image: 
+      radial-gradient(circle at 80% -20%, rgba(124, 58, 237, 0.15), transparent 40%),
+      radial-gradient(circle at 10% 110%, rgba(14, 165, 233, 0.12), transparent 40%);
+    background-attachment: fixed;
   }
 
   html {

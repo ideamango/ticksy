@@ -1,5 +1,5 @@
 import { motion } from "motion/react";
-import { X } from "lucide-react";
+import { X, Plus } from "lucide-react";
 import { useEffect, useState } from "react";
 import type { SharedList } from "../types";
 
@@ -44,11 +44,18 @@ export function ReuseListModal({ isOpen, onClose, source, onCreateFromSelection 
     };
 
     return (
-        <motion.div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={onClose}>
-            <motion.div className="bg-card rounded-3xl p-6 w-full max-w-2xl shadow-2xl" onClick={(e) => e.stopPropagation()}>
+        <motion.div
+            className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
+            onClick={onClose}
+        >
+            <motion.div
+                className="bg-card dark:bg-level-3 rounded-xl p-6 w-full max-w-2xl shadow-2xl border border-border"
+                onClick={(e) => e.stopPropagation()}
+            >
+                {/* Header */}
                 <div className="flex items-start justify-between mb-4">
                     <div>
-                        <h3 className="mb-1">Create new list from "{source.title}"</h3>
+                        <h3 className="mb-1">Create new list from &ldquo;{source.title}&rdquo;</h3>
                         <p className="text-sm text-muted-foreground">Select items to include and add any new items below.</p>
                     </div>
                     <button onClick={onClose} className="p-2 hover:bg-muted rounded-full">
@@ -56,44 +63,113 @@ export function ReuseListModal({ isOpen, onClose, source, onCreateFromSelection 
                     </button>
                 </div>
 
+                {/* List name input */}
                 <div className="mb-4">
                     <label className="text-sm text-muted-foreground">New list name</label>
-                    <input value={name} onChange={(e) => setName(e.target.value)} className="w-full mt-2 px-3 py-2 rounded-lg border bg-input-background" />
+                    <input
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        className="w-full mt-2 px-3 py-2 rounded-lg border border-border bg-[var(--modal-input-bg)] text-foreground outline-none focus:ring-2 focus:ring-ring"
+                    />
                 </div>
 
-                <div className="max-h-56 overflow-auto mb-4 space-y-2">
+                {/* Existing items – compact */}
+                <div
+                    className="max-h-56 overflow-auto mb-4"
+                    style={{ display: "flex", flexDirection: "column", gap: "var(--list-item-gap)" }}
+                >
                     {source.items.map((it) => (
-                        <label key={it.id} className="flex items-center gap-3 p-2 rounded-lg hover:bg-muted/20">
-                            <input type="checkbox" checked={!!selected[it.id]} onChange={() => toggle(it.id)} />
+                        <label
+                            key={it.id}
+                            className="flex items-center gap-3 px-2 py-1.5 rounded-lg hover:bg-muted/20 cursor-pointer"
+                        >
+                            {/* Brand-highlight checkbox */}
+                            <input
+                                type="checkbox"
+                                checked={!!selected[it.id]}
+                                onChange={() => toggle(it.id)}
+                                className="w-4 h-4 cursor-pointer"
+                                style={{
+                                    accentColor: "var(--checkbox-highlight)",
+                                }}
+                            />
                             <div>
-                                <div className="font-medium">{it.description}</div>
-                                {(it.quantity || it.unit) && <div className="text-sm text-muted-foreground">{it.quantity} {it.unit}</div>}
+                                <div className="font-medium text-foreground leading-tight">{it.description}</div>
+                                {(it.quantity || it.unit) && (
+                                    <div className="text-xs text-muted-foreground">{it.quantity} {it.unit}</div>
+                                )}
                             </div>
                         </label>
                     ))}
                 </div>
 
+                {/* New items rows */}
                 <div className="mb-4">
+                    {/* Section header with + icon on the right */}
                     <div className="flex items-center justify-between mb-2">
-                        <div className="text-sm text-muted-foreground">Add new items</div>
-                        <button onClick={addNewItemRow} className="text-sm text-primary underline">Add row</button>
+                        <div className="text-sm text-muted-foreground">New items</div>
+                        <button
+                            onClick={addNewItemRow}
+                            title="Add new item"
+                            className="p-1 rounded-full hover:bg-muted transition-colors text-muted-foreground hover:text-foreground"
+                        >
+                            <Plus className="w-4 h-4" />
+                        </button>
                     </div>
 
-                    <div className="space-y-2">
+                    <div style={{ display: "flex", flexDirection: "column", gap: "var(--list-item-gap)" }}>
                         {newItems.map((it, idx) => (
-                            <div key={idx} className="flex gap-2">
-                                <input value={it.description} onChange={(e) => updateNewItem(idx, { description: e.target.value })} placeholder="Description" className="flex-1 px-2 py-1 rounded-lg border bg-white" />
-                                <input value={it.quantity} onChange={(e) => updateNewItem(idx, { quantity: e.target.value })} placeholder="Qty" className="w-24 px-2 py-1 rounded-lg border bg-white" />
-                                <input value={it.unit} onChange={(e) => updateNewItem(idx, { unit: e.target.value })} placeholder="Unit" className="w-28 px-2 py-1 rounded-lg border bg-white" />
-                                <button onClick={() => removeNewItem(idx)} className="p-2 text-destructive">Remove</button>
+                            <div key={idx} className="flex gap-2 items-center">
+                                <input
+                                    value={it.description}
+                                    onChange={(e) => updateNewItem(idx, { description: e.target.value })}
+                                    placeholder="Description"
+                                    className="flex-1 px-2 py-1.5 rounded-lg border border-border bg-[var(--modal-input-bg)] text-foreground outline-none focus:ring-1 focus:ring-ring text-sm"
+                                />
+                                <input
+                                    value={it.quantity}
+                                    onChange={(e) => updateNewItem(idx, { quantity: e.target.value })}
+                                    placeholder="Qty"
+                                    className="w-20 px-2 py-1.5 rounded-lg border border-border bg-[var(--modal-input-bg)] text-foreground outline-none focus:ring-1 focus:ring-ring text-sm"
+                                />
+                                <input
+                                    value={it.unit}
+                                    onChange={(e) => updateNewItem(idx, { unit: e.target.value })}
+                                    placeholder="Unit"
+                                    className="w-24 px-2 py-1.5 rounded-lg border border-border bg-[var(--modal-input-bg)] text-foreground outline-none focus:ring-1 focus:ring-ring text-sm"
+                                />
+                                {/* × icon instead of Remove button */}
+                                <button
+                                    onClick={() => removeNewItem(idx)}
+                                    title="Remove item"
+                                    className="p-1 text-muted-foreground hover:text-destructive transition-colors"
+                                >
+                                    <X className="w-4 h-4" />
+                                </button>
                             </div>
                         ))}
                     </div>
                 </div>
 
+                {/* Footer buttons – reduced radius, cancel has visible border */}
                 <div className="flex items-center justify-end gap-3">
-                    <button onClick={onClose} className="px-4 py-2 rounded-2xl">Cancel</button>
-                    <button onClick={handleCreate} className="px-4 py-2 rounded-2xl bg-primary text-primary-foreground">Create</button>
+                    <button
+                        onClick={onClose}
+                        className="px-4 py-2 text-foreground transition-colors hover:bg-muted/40"
+                        style={{
+                            borderRadius: "var(--btn-border-radius)",
+                            border: "1px solid var(--cancel-btn-border)",
+                        }}
+                    >
+                        Cancel
+                    </button>
+                    <button
+                        onClick={handleCreate}
+                        className="px-4 py-2 bg-primary text-primary-foreground transition-colors hover:opacity-90"
+                        style={{ borderRadius: "var(--btn-border-radius)" }}
+                    >
+                        Create
+                    </button>
                 </div>
             </motion.div>
         </motion.div>

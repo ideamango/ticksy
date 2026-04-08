@@ -69,7 +69,7 @@ export function CreateTemplateModal({ isOpen, onClose, onCreate }: CreateTemplat
         exit={{ y: "100%", opacity: 0 }}
         transition={{ type: "spring", damping: 30, stiffness: 300 }}
         onClick={(e) => e.stopPropagation()}
-        className="bg-card rounded-3xl p-6 w-full max-w-md shadow-2xl flex flex-col max-h-[90vh]"
+        className="bg-card rounded-xl p-6 w-full max-w-md shadow-2xl flex flex-col max-h-[90vh]"
       >
         <div className="flex items-center justify-between mb-2">
           <h3>Create New Template</h3>
@@ -91,7 +91,7 @@ export function CreateTemplateModal({ isOpen, onClose, onCreate }: CreateTemplat
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="e.g., Monthly Workout"
-              className="w-full px-4 py-3 rounded-2xl bg-input-background border-0 focus:ring-2 focus:ring-primary outline-none transition-all"
+              className="w-full px-4 py-3 rounded-lg bg-[var(--modal-input-bg)] border border-border text-foreground outline-none focus:ring-2 focus:ring-ring transition-all"
             />
           </div>
 
@@ -102,7 +102,7 @@ export function CreateTemplateModal({ isOpen, onClose, onCreate }: CreateTemplat
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="e.g., Exercises for the gym"
-              className="w-full px-4 py-3 rounded-2xl bg-input-background border-0 focus:ring-2 focus:ring-primary outline-none transition-all"
+              className="w-full px-4 py-3 rounded-lg bg-[var(--modal-input-bg)] border border-border text-foreground outline-none focus:ring-2 focus:ring-ring transition-all"
             />
           </div>
 
@@ -110,16 +110,16 @@ export function CreateTemplateModal({ isOpen, onClose, onCreate }: CreateTemplat
             <label className="block mb-3 text-sm">Category</label>
             <div className="grid grid-cols-5 gap-2">
               {categories.map((category) => (
-                <motion.button
-                  key={category.id}
-                  onClick={() => setSelectedCategory(category.id)}
-                  className={`
-                    p-2 rounded-2xl border-2 transition-all text-center flex flex-col items-center justify-center
-                    ${selectedCategory === category.id
-                      ? "border-primary bg-primary/10"
-                      : "border-muted bg-white"
-                    }
-                  `}
+                  <motion.button
+                    key={category.id}
+                    onClick={() => setSelectedCategory(category.id)}
+                    className={`
+                      p-2 rounded-xl border transition-all text-center flex flex-col items-center justify-center
+                      ${selectedCategory === category.id
+                        ? "border-transparent bg-highlight text-highlight-foreground shadow-sm scale-105"
+                        : "border-border bg-background dark:bg-level-2 text-foreground"
+                      }
+                    `}
                   whileTap={{ scale: 0.95 }}
                 >
                   <div className="text-2xl">{category.emoji}</div>
@@ -145,7 +145,7 @@ export function CreateTemplateModal({ isOpen, onClose, onCreate }: CreateTemplat
                       value={item.description}
                       onChange={(e) => updateItem(item.id, e.target.value)}
                       placeholder={`Item ${index + 1}`}
-                      className="flex-1 px-4 py-3 rounded-2xl bg-input-background border-0 focus:ring-2 focus:ring-primary outline-none transition-all"
+                      className="flex-1 px-4 py-3 rounded-lg bg-[var(--modal-input-bg)] border border-border text-foreground outline-none focus:ring-2 focus:ring-ring transition-all"
                       onKeyDown={(e) => {
                         if (e.key === "Enter" && item.description.trim()) {
                            addItem();
@@ -178,12 +178,13 @@ export function CreateTemplateModal({ isOpen, onClose, onCreate }: CreateTemplat
           onClick={handleCreate}
           disabled={!name.trim() || !items.some((it) => it.description.trim())}
           className={`
-            w-full py-3 px-4 rounded-2xl font-semibold transition-all mt-auto
+            w-full py-4 px-4 font-bold transition-all shadow-md mt-auto
             ${name.trim() && items.some((it) => it.description.trim())
-              ? "bg-primary text-primary-foreground"
+              ? "bg-highlight text-highlight-foreground"
               : "bg-muted text-muted-foreground cursor-not-allowed"
             }
           `}
+          style={{ borderRadius: "var(--btn-border-radius)" }}
           whileTap={name.trim() && items.some((it) => it.description.trim()) ? { scale: 0.98 } : {}}
         >
           Save Template

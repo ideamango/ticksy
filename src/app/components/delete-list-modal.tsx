@@ -25,7 +25,7 @@ export function DeleteListModal({ isOpen, onClose, onConfirm, listName }: Delete
         exit={{ scale: 0.95, opacity: 0 }}
         transition={{ type: "spring", damping: 30, stiffness: 300 }}
         onClick={(e) => e.stopPropagation()}
-        className="bg-card rounded-3xl p-6 w-full max-w-sm shadow-2xl text-center"
+        className="bg-card rounded-xl p-6 w-full max-w-sm shadow-2xl text-center"
       >
         <div className="flex justify-center mb-4 text-destructive">
           <div className="p-4 bg-destructive/10 rounded-full">
@@ -41,14 +41,19 @@ export function DeleteListModal({ isOpen, onClose, onConfirm, listName }: Delete
         <div className="flex gap-3">
           <motion.button
             onClick={onClose}
-            className="flex-1 py-3 px-4 rounded-2xl bg-muted text-foreground font-semibold hover:bg-muted/80 transition-colors"
+            className="flex-1 py-3 px-4 text-foreground font-semibold hover:bg-muted/40 transition-colors"
+            style={{ 
+              borderRadius: "var(--btn-border-radius)",
+              border: "1px solid var(--cancel-btn-border)"
+            }}
             whileTap={{ scale: 0.98 }}
           >
             Cancel
           </motion.button>
           <motion.button
             onClick={onConfirm}
-            className="flex-1 py-3 px-4 rounded-2xl bg-red-500 text-white font-semibold hover:bg-red-600 transition-colors"
+            className="flex-1 py-3 px-4 bg-red-500 text-white font-semibold hover:bg-red-600 transition-colors"
+            style={{ borderRadius: "var(--btn-border-radius)" }}
             whileTap={{ scale: 0.98 }}
           >
             Delete

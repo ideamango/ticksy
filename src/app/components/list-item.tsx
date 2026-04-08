@@ -76,10 +76,10 @@ export function ListItem({
           exit={{ opacity: 0, x: -100 }}
           layout
           className={`
-            flex items-center gap-3 py-4 px-4 rounded-2xl transition-all duration-300 group
+            flex items-center gap-3 py-4 px-4 rounded-lg transition-all duration-300 group
             ${completed 
-              ? "bg-muted dark:bg-level-1 opacity-60 scale-[0.98]" 
-              : "bg-card dark:bg-level-2 border border-border shadow-sm hover:shadow-md hover:-translate-y-0.5"
+              ? "bg-muted dark:bg-level-1/50 opacity-60 scale-[0.98]" 
+              : "bg-card dark:backdrop-blur-sm border border-border shadow-sm hover:shadow-md hover:-translate-y-0.5"
             }
           `}
         >
