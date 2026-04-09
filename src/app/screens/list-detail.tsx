@@ -133,7 +133,7 @@ export function ListDetail() {
               >
                 <ChevronLeft className="w-5 h-5" />
               </motion.button>
-              
+
               <div className="min-w-0 flex-1 flex flex-col justify-center">
                 <h2 className="mb-0 text-lg sm:text-3xl font-extrabold block w-full leading-tight line-clamp-2 sm:truncate">{`${list.title} ${list.emoji ?? ""}`.trim()}</h2>
                 <p className="text-xs sm:text-base text-muted-foreground truncate block w-full leading-snug">{categoryLabel}</p>
@@ -174,12 +174,12 @@ export function ListDetail() {
                 </motion.button>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                      <motion.button
-                        className="p-2 hover:bg-muted dark:hover:bg-level-2 rounded-full transition-colors outline-none cursor-pointer"
-                        whileTap={{ scale: 0.9 }}
-                      >
-                        <MoreVertical className="w-5 h-5 text-foreground" />
-                      </motion.button>
+                    <motion.button
+                      className="p-2 hover:bg-muted dark:hover:bg-level-2 rounded-full transition-colors outline-none cursor-pointer"
+                      whileTap={{ scale: 0.9 }}
+                    >
+                      <MoreVertical className="w-5 h-5 text-foreground" />
+                    </motion.button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="w-48 bg-card rounded-xl p-2 shadow-xl border border-border">
                     <DropdownMenuItem
@@ -264,12 +264,12 @@ export function ListDetail() {
       </div>
 
       {/* Fixed Bottom Add Item Bar */}
-      <div className="fixed bottom-0 left-0 lg:left-[280px] right-0 p-3 sm:p-6 pb-5 sm:pb-8 bg-gradient-to-t from-background dark:from-level-1 via-background/80 to-transparent pointer-events-none z-40">
+      <div className="fixed bottom-0 left-0 lg:left-[280px] right-0 p-3 sm:p-6 pb-5 sm:pb-8 pointer-events-none z-40">
         <div className="max-w-3xl mx-auto pointer-events-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-card dark:backdrop-blur-xl border border-border focus-within:border-foreground/50 shadow-2xl rounded-xl p-1.5 flex items-center transition-all"
+            className="bg-card dark:backdrop-blur-xl border border-border focus-within:border-foreground/50 rounded-xl p-1.5 flex items-center transition-all"
           >
             <input
               type="text"
@@ -279,7 +279,7 @@ export function ListDetail() {
               className="w-full flex-1 px-3 sm:px-4 py-2.5 bg-transparent border-0 outline-none min-w-[80px] text-sm sm:text-base font-medium placeholder:text-muted-foreground/60"
               onKeyDown={(e) => e.key === "Enter" && handleAddItem()}
             />
-            
+
             <div className="w-px h-6 bg-border/50 mx-1 hidden sm:block shrink-0"></div>
 
             <input
@@ -290,7 +290,7 @@ export function ListDetail() {
               className="w-12 sm:w-16 px-1 sm:px-2 py-2.5 bg-transparent border-0 outline-none text-center text-sm sm:text-base font-medium placeholder:text-muted-foreground/60"
               onKeyDown={(e) => e.key === "Enter" && handleAddItem()}
             />
-            
+
             <div className="relative w-16 sm:w-24 shrink-0">
               <select
                 value={newItemUnit}

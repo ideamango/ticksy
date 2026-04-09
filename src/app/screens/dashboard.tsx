@@ -3,7 +3,7 @@ import { motion } from "motion/react";
 import { ListCard } from "../components/list-card";
 import { CreateListModal } from "../components/create-list-modal";
 import { useNavigate, useSearchParams } from "react-router";
-import { FileText, Receipt, Share2, Recycle, Lightbulb, Plus, History, ChevronRight, CheckSquare } from "lucide-react";
+import { FileText, Receipt, Share2, Recycle, Lightbulb, PlusCircle, History, ChevronRight, CheckSquare } from "lucide-react";
 import { toast } from "sonner";
 import { categories } from "../data/templates";
 import { formatLastUpdated, useLists } from "../context/list-context";
@@ -115,8 +115,8 @@ export function Dashboard() {
             <p className="text-[9px] sm:text-sm text-muted-foreground mb-2 sm:mb-6 flex-1 leading-tight line-clamp-3 sm:line-clamp-none">
               Share effortlessly with a link
             </p>
-            <div className="w-10 h-10 sm:w-20 sm:h-20 bg-background dark:bg-level-1 rounded-lg sm:rounded-xl flex items-center justify-center">
-              <Share2 className="w-5 h-5 sm:w-9 sm:h-9" stroke="url(#highlight-gradient)" />
+            <div className="w-10 h-10 sm:w-20 sm:h-20 bg-muted/30 rounded-lg sm:rounded-xl flex items-center justify-center">
+              <Share2 className="w-5 h-5 sm:w-9 sm:h-9 text-[#E7A1B0]" strokeWidth={2.5} />
             </div>
           </button>
           
@@ -131,8 +131,8 @@ export function Dashboard() {
             <p className="text-[9px] sm:text-sm text-muted-foreground mb-2 sm:mb-6 flex-1 leading-tight line-clamp-3 sm:line-clamp-none">
               Stop rewriting the same items
             </p>
-            <div className="w-10 h-10 sm:w-20 sm:h-20 bg-background dark:bg-level-1 rounded-lg sm:rounded-xl flex items-center justify-center">
-              <Recycle className="w-5 h-5 sm:w-9 sm:h-9" stroke="url(#highlight-gradient)" />
+            <div className="w-10 h-10 sm:w-20 sm:h-20 bg-muted/30 rounded-lg sm:rounded-xl flex items-center justify-center">
+              <Recycle className="w-5 h-5 sm:w-9 sm:h-9 text-[#C5A3FF]" strokeWidth={2.5} />
             </div>
           </button>
 
@@ -147,8 +147,8 @@ export function Dashboard() {
             <p className="text-[9px] sm:text-sm text-muted-foreground mb-2 sm:mb-6 flex-1 leading-tight line-clamp-3 sm:line-clamp-none">
               Start a fresh list right now
             </p>
-            <div className="w-10 h-10 sm:w-20 sm:h-20 bg-background dark:bg-level-1 rounded-lg sm:rounded-xl flex items-center justify-center">
-              <Plus className="w-8 h-8 sm:w-12 sm:h-12" strokeWidth={2.5} stroke="url(#highlight-gradient)" />
+            <div className="w-10 h-10 sm:w-20 sm:h-20 bg-muted/30 rounded-lg sm:rounded-xl flex items-center justify-center">
+              <PlusCircle className="w-5 h-5 sm:w-9 sm:h-9 text-[#FDCA8C]" strokeWidth={2.5} />
             </div>
           </button>
         </motion.div>
@@ -236,7 +236,7 @@ export function Dashboard() {
           onClick={() => setIsCreateModalOpen(true)}
           className="w-16 h-16 bg-highlight text-highlight-foreground hover:bg-highlight/90 rounded-xl flex items-center justify-center shadow-2xl active:scale-95 transition-all backdrop-blur-md border border-border/20"
         >
-          <Plus className="w-8 h-8" strokeWidth={3} />
+          <PlusCircle className="w-8 h-8" strokeWidth={3} />
         </button>
       </div>
 
