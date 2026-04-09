@@ -20,6 +20,7 @@ export function Templates() {
   const [selectedTemplateId, setSelectedTemplateId] = useState<string | null>(allTemplates[0]?.id || null);
   const [isCreating, setIsCreating] = useState(false);
   const [isUseModalOpen, setIsUseModalOpen] = useState(false);
+  const [isMobileDetailOpen, setIsMobileDetailOpen] = useState(false);
   const [templateToUse, setTemplateToUse] = useState<ListTemplate | null>(null);
 
   const selectedTemplate = useMemo(() => 
@@ -59,7 +60,13 @@ export function Templates() {
           <div className="flex flex-row items-center justify-between gap-2 mb-0">
             <div className="flex items-center gap-2 sm:gap-4 flex-1 min-w-0">
               <motion.button
-                onClick={() => navigate("/")}
+                onClick={() => {
+                  if (typeof window !== 'undefined' && window.innerWidth < 1024 && isMobileDetailOpen) {
+                    setIsMobileDetailOpen(false);
+                  } else {
+                    navigate("/");
+                  }
+                }}
                 className="p-2 bg-background hover:bg-muted rounded-full transition-colors shrink-0 border border-border"
                 whileTap={{ scale: 0.9 }}
               >
@@ -82,7 +89,7 @@ export function Templates() {
 
         {/* Split Layout: Sidebar + main panel */}
         <div className="relative z-20 grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-6 px-0">
-          <aside className="hidden lg:block -ml-1">
+          <aside className={`-ml-1 ${isMobileDetailOpen ? 'hidden lg:block' : 'block w-full'}`}>
             <div className="flex flex-col max-h-[calc(100vh-10rem)] h-full">
               <div className="flex-1 overflow-auto space-y-3 pl-1 pr-4 py-2 custom-scrollbar">
                 {allTemplates.map((template) => (
@@ -97,6 +104,7 @@ export function Templates() {
                     onClick={() => {
                       setSelectedTemplateId(template.id);
                       setIsCreating(false);
+                      setIsMobileDetailOpen(true);
                     }}
                   />
                 ))}
@@ -105,7 +113,10 @@ export function Templates() {
               {!isCreating && (
                 <div className="mt-4 pr-4">
                   <motion.button
-                    onClick={() => setIsCreating(true)}
+                    onClick={() => {
+                      setIsCreating(true);
+                      setIsMobileDetailOpen(true);
+                    }}
                     className="w-full py-4 bg-highlight text-highlight-foreground rounded-xl font-bold flex items-center justify-center gap-2 shadow-lg hover:shadow-xl transition-all"
                     whileTap={{ scale: 0.95 }}
                   >
@@ -117,7 +128,7 @@ export function Templates() {
             </div>
           </aside>
 
-          <main className="px-2 relative">
+          <main className={`px-2 relative ${!isMobileDetailOpen ? 'hidden lg:block' : 'block w-full'}`}>
             {isCreating ? (
               <InlineCreateTemplate 
                 onCancel={() => setIsCreating(false)} 

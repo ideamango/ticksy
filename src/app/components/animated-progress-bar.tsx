@@ -30,7 +30,7 @@ export function AnimatedProgressBar({ value, max }: AnimatedProgressBarProps) {
       </div>
       <div className="w-full h-3 bg-muted dark:bg-level-1 rounded-full overflow-hidden shadow-inner">
         <motion.div
-          className="h-full bg-highlight rounded-full"
+          className="h-full bg-foreground rounded-full"
           initial={{ width: 0 }}
           animate={{ width: `${percentage}%` }}
           transition={{ duration: 0.5, ease: "easeOut" }}
