@@ -37,6 +37,7 @@ export function ListDetail() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
   const list = id ? getListById(id) : undefined;
+  const hasLists = lists.length > 0;
 
   useEffect(() => {
     if (id) {
@@ -230,7 +231,8 @@ export function ListDetail() {
         </div>
 
         {/* Main grid: left lists sidebar + right detail */}
-        <div className="relative z-20 grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-6 px-0 pb-12 sm:pb-16">
+        <div className={`relative z-20 grid grid-cols-1 ${hasLists ? 'lg:grid-cols-[280px_1fr]' : ''} gap-6 px-0 pb-12 sm:pb-16`}>
+          {hasLists && (
           <aside className={`${list ? 'hidden lg:block' : 'block w-full'} min-w-0`}>
             <div className="h-[calc(100vh-8rem)] min-h-0 px-2 lg:px-0 lg:pr-4 pt-2 pb-[calc(5rem+env(safe-area-inset-bottom))] lg:pb-8 flex flex-col overflow-x-hidden">
               {/* Sidebar lists (scrollable) */}
@@ -262,9 +264,10 @@ export function ListDetail() {
               </motion.button>
             </div>
           </aside>
+          )}
 
-          <main className={`px-2 relative ${!list ? 'hidden lg:block' : 'block w-full'}`}>
-            <div className={`px-2 mt-6 ${!list ? 'hidden lg:block' : ''}`}>
+          <main className={`px-2 relative ${!list && hasLists ? 'hidden lg:block' : 'block w-full'}`}>
+            <div className={`px-2 mt-6 ${!list && hasLists ? 'hidden lg:block' : ''}`}>
               {/* Items List */}
               {list ? (
                 <div className="space-y-2">
@@ -296,6 +299,24 @@ export function ListDetail() {
                     </motion.div>
                   )}
                 </div>
+              ) : !hasLists ? (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="text-center py-32 flex flex-col items-center justify-center h-full"
+                >
+                  <motion.button
+                    onClick={() => setIsCreateModalOpen(true)}
+                    className="px-6 py-3 rounded-xl bg-foreground text-background font-semibold transition-opacity hover:opacity-90 flex items-center justify-center gap-2 shadow-lg"
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    <Plus className="w-4 h-4" />
+                    New List
+                  </motion.button>
+                  <p className="text-muted-foreground max-w-sm mt-5">
+                    You don&apos;t have any list yet.
+                  </p>
+                </motion.div>
               ) : (
                 <motion.div
                   initial={{ opacity: 0 }}

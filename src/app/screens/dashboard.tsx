@@ -58,16 +58,16 @@ export function Dashboard() {
           <stop offset="100%" stopColor="#C5A3FF" />
         </linearGradient>
       </svg>
-      
+
       <div className="bg-card w-full h-full min-h-[calc(100vh-3rem)] rounded-none md:rounded-3xl border-0 md:border md:border-border shadow-sm overflow-hidden flex flex-col md:m-0">
-        
+
         {/* Top Header */}
         <div className="flex items-center justify-between p-6 sm:p-8 border-b border-border bg-card sticky top-0 z-10 w-full">
           <div className="flex items-center gap-3">
             <h1 className="text-2xl font-bold tracking-tight text-foreground">Ticksy</h1>
           </div>
           <div className="flex items-center gap-2">
-            <button 
+            <button
               onClick={() => navigate("/alerts")}
               className="p-2 text-muted-foreground hover:text-foreground md:hidden rounded-full transition-colors"
             >
@@ -104,25 +104,25 @@ export function Dashboard() {
           <div className="mb-10">
             <h2 className="text-lg font-bold text-foreground mb-4">Quick Action Chips</h2>
             <div className="flex flex-wrap items-center gap-3">
-              <button 
+              <button
                 onClick={() => setIsCreateModalOpen(true)}
                 className="flex items-center gap-2 px-4 py-2 bg-foreground text-background font-semibold rounded-full hover:opacity-90 transition-opacity whitespace-nowrap text-sm"
               >
                 <PlusCircle className="w-4 h-4" /> Create New List
               </button>
-              <button 
+              <button
                 onClick={handleReuseLast}
                 className="flex items-center gap-2 px-4 py-2 bg-muted text-foreground font-medium rounded-full hover:bg-muted/80 transition-colors whitespace-nowrap text-sm"
               >
                 <Recycle className="w-4 h-4" /> Reuse Past
               </button>
-              <button 
+              <button
                 onClick={() => toast.info("Check back soon to see lists shared with you directly!")}
                 className="flex items-center gap-2 px-4 py-2 bg-muted text-foreground font-medium rounded-full hover:bg-muted/80 transition-colors whitespace-nowrap text-sm"
               >
                 <Share2 className="w-4 h-4" /> Share Lists
               </button>
-              <button 
+              <button
                 onClick={() => navigate('/templates')}
                 className="flex items-center gap-2 px-4 py-2 bg-muted text-foreground font-medium rounded-full hover:bg-muted/80 transition-colors whitespace-nowrap text-sm"
               >
@@ -132,52 +132,52 @@ export function Dashboard() {
           </div>
 
 
-        {/* User's Existing Lists section */}
-        <motion.div 
-          id="your-lists"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.4 }}
-          className="mb-6 flex justify-between items-center scroll-mt-32"
-        >
-          <h2 className="text-lg font-bold text-foreground mb-2">Your Lists</h2>
-          <button 
-            onClick={() => navigate("/templates")}
-            className="text-sm font-medium text-foreground/80 flex items-center gap-1 hover:underline"
-          >
-            <FileText className="w-4 h-4" />
-            Browse templates
-          </button>
-        </motion.div>
-
-        {lists.length === 0 ? (
+          {/* User's Existing Lists section */}
           <motion.div
+            id="your-lists"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="text-center py-16 bg-white dark:bg-card rounded-xl border border-dashed border-slate-200 dark:border-border mt-4"
+            transition={{ delay: 0.4 }}
+            className="mb-6 flex justify-between items-center scroll-mt-32"
           >
-            <div className="text-4xl mb-4">📝</div>
-            <h3 className="font-semibold text-lg mb-2">No lists yet</h3>
-            <p className="text-slate-500 dark:text-muted-foreground mb-6 max-w-sm mx-auto">
-              Create your first list or browse templates to get started!
-            </p>
+            <h2 className="text-lg font-bold text-foreground mb-2">Your Lists</h2>
+            <button
+              onClick={() => navigate("/templates")}
+              className="text-sm font-medium text-foreground/80 flex items-center gap-1 hover:underline"
+            >
+              <FileText className="w-4 h-4" />
+              Browse templates
+            </button>
           </motion.div>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4 pb-20 sm:pb-4 border-t border-border mt-2 pt-4">
-            {lists.map((list, index) => (
-              <ListCard
-                key={list.id}
-                id={list.id}
-                title={`${list.title} ${list.emoji ?? ""}`.trim()}
-                category={categories.find((category) => category.id === list.categoryId)?.label ?? "Other"}
-                completed={list.items.filter((item) => item.completed).length}
-                total={list.items.length}
-                lastUpdated={formatLastUpdated(list.updatedAt)}
-                index={index}
-              />
-            ))}
-          </div>
-        )}
+
+          {lists.length === 0 ? (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="text-center py-16 bg-white dark:bg-card rounded-xl border border-dashed border-slate-200 dark:border-border mt-4"
+            >
+              <div className="text-4xl mb-4">📝</div>
+              <h3 className="font-semibold text-lg mb-2">No lists yet</h3>
+              <p className="text-slate-500 dark:text-muted-foreground mb-6 max-w-sm mx-auto">
+                Create your first list or browse templates to get started!
+              </p>
+            </motion.div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4 pb-20 sm:pb-4 border-t border-border mt-2 pt-4">
+              {lists.map((list, index) => (
+                <ListCard
+                  key={list.id}
+                  id={list.id}
+                  title={`${list.title} ${list.emoji ?? ""}`.trim()}
+                  category={categories.find((category) => category.id === list.categoryId)?.label ?? "Other"}
+                  completed={list.items.filter((item) => item.completed).length}
+                  total={list.items.length}
+                  lastUpdated={formatLastUpdated(list.updatedAt)}
+                  index={index}
+                />
+              ))}
+            </div>
+          )}
 
         </div>
       </div>

@@ -116,7 +116,7 @@ export function Alerts() {
                   ${alert.read ? "bg-background border-border" : "bg-muted/30 border-highlight/30 shadow-sm"}
                 `}
               >
-                <button 
+                <button
                   onClick={() => removeAlert(alert.id)}
                   className="absolute top-4 right-4 p-1.5 text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-full transition-colors opacity-100 lg:opacity-0 lg:group-hover:opacity-100"
                 >
@@ -125,13 +125,13 @@ export function Alerts() {
 
                 <div className="flex gap-4 pr-8">
                   <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 mt-0.5
-                    ${alert.type === "invite" ? "bg-[#E7A1B0]/20 text-[#E7A1B0]" : 
-                      alert.type === "system" ? "bg-[#C5A3FF]/20 text-[#C5A3FF]" : 
-                      "bg-foreground/10 text-foreground"}
+                    ${alert.type === "invite" ? "bg-[#E7A1B0]/20 text-[#E7A1B0]" :
+                      alert.type === "system" ? "bg-[#C5A3FF]/20 text-[#C5A3FF]" :
+                        "bg-foreground/10 text-foreground"}
                   `}>
-                    {alert.type === "invite" ? <UserPlus className="w-5 h-5" /> : 
-                     alert.type === "system" ? <Info className="w-5 h-5" /> :
-                     <Bell className="w-5 h-5" />}
+                    {alert.type === "invite" ? <UserPlus className="w-5 h-5" /> :
+                      alert.type === "system" ? <Info className="w-5 h-5" /> :
+                        <Bell className="w-5 h-5" />}
                   </div>
                   <div className="flex-1">
                     <h3 className={`font-semibold mb-1 ${alert.read ? "text-foreground" : "text-foreground font-bold"}`}>

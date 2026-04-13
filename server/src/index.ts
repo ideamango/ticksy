@@ -2,7 +2,14 @@ import express from 'express';
 import http from 'http';
 import { Server } from 'socket.io';
 import cors from 'cors';
-import { sequelize, User, List } from './db';
+import type { Request, Response } from 'express';
+import { env } from './config/env';
+import { createRequireUserMiddleware } from './middleware/require-user';
+import { KvClient } from './lib/kv-client';
+import { ListRepository } from './repositories/list-repository';
+import { UserRepository } from './repositories/user-repository';
+import { ForbiddenError, ListService, NotFoundError } from './services/list-service';
+import { AuthService } from './services/auth-service';
 
 const app = express();
 const server = http.createServer(app);
@@ -15,47 +22,130 @@ const io = new Server(server, {
 app.use(cors());
 app.use(express.json());
 
-// Extend Express Request type
-declare global {
-  namespace Express {
-    interface Request {
-      user?: any;
-    }
-  }
+const kvClient = new KvClient();
+const userRepository = new UserRepository(kvClient);
+const listRepository = new ListRepository(kvClient);
+const authService = new AuthService(userRepository);
+const listService = new ListService(listRepository, userRepository);
+
+function getUserId(req: Request): string {
+  return req.userId as string;
 }
 
-app.use(async (req, res, next) => {
-  const userId = req.headers['x-user-id'] as string;
-  if (!userId) {
-    res.status(401).json({ error: 'Missing x-user-id header' });
-    return;
+function badRequest(res: Response, message: string) {
+  return res.status(400).json({ error: message });
+}
+
+function requireNonEmptyString(value: unknown): value is string {
+  return typeof value === 'string' && value.trim().length > 0;
+}
+
+function getRequiredParam(req: Request, key: string): string | null {
+  const value = req.params[key];
+  return typeof value === 'string' && value.trim().length > 0 ? value : null;
+}
+
+async function handleCreateList(req: Request, res: Response) {
+  const { listId, title, categoryId, emoji, items } = req.body;
+  if (!requireNonEmptyString(listId)) {
+    return badRequest(res, 'listId is required');
   }
-  
+  if (!requireNonEmptyString(title)) {
+    return badRequest(res, 'title is required');
+  }
+
+  const newList = await listService.createList(getUserId(req), {
+    listId,
+    title: title.trim(),
+    categoryId,
+    emoji,
+    items: Array.isArray(items) ? items : [],
+  });
+
+  return res.json(newList);
+}
+
+async function handleGetMyLists(req: Request, res: Response) {
+  const myLists = await listService.getMyLists(getUserId(req));
+  return res.json(myLists);
+}
+
+async function handleGetList(req: Request, res: Response) {
+  const id = getRequiredParam(req, 'id');
+  if (!id) {
+    return badRequest(res, 'id is required');
+  }
+  const list = await listService.fetchAndJoin(id, getUserId(req));
+  return res.json(list);
+}
+
+async function handleUpdateList(req: Request, res: Response) {
+  const requestedListId = req.params.id || req.body.listId;
+  if (!requireNonEmptyString(requestedListId)) {
+    return badRequest(res, 'listId is required');
+  }
+
+  const { items, patch } = req.body;
+  if (items === undefined && patch === undefined) {
+    return badRequest(res, 'Either items or patch is required');
+  }
+
+  const list = await listService.updateList(requestedListId, getUserId(req), { items, patch });
+  return res.json(list);
+}
+
+async function handleDeleteList(req: Request, res: Response) {
+  const id = getRequiredParam(req, 'id');
+  if (!id) {
+    return badRequest(res, 'id is required');
+  }
+  await listService.deleteList(id, getUserId(req));
+  return res.json({ success: true });
+}
+
+app.get('/health', (_req, res) => {
+  res.json({ ok: true, service: 'ticksy-server' });
+});
+
+app.post('/auth/login', async (req, res) => {
   try {
-    const [user, created] = await User.findOrCreate({ where: { userId } });
-    req.user = user;
-    next();
-  } catch (error) {
-    next(error);
+    const preferredUserId = typeof req.body?.userId === 'string' ? req.body.userId : undefined;
+    const result = await authService.login(preferredUserId);
+    res.json(result);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to login' });
+  }
+});
+
+app.use(createRequireUserMiddleware(authService));
+
+app.get('/auth/me', async (req, res) => {
+  try {
+    const user = await authService.getUser(getUserId(req));
+    if (!user) {
+      res.status(404).json({ error: 'User not found' });
+      return;
+    }
+    res.json(user);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to fetch user' });
   }
 });
 
 app.post('/create-list', async (req, res) => {
   try {
-    const { listId, title, categoryId, emoji, items } = req.body;
-    const userId = req.headers['x-user-id'] as string;
+    await handleCreateList(req, res);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to create list' });
+  }
+});
 
-    const newList = await List.create({
-      listId,
-      ownerId: userId,
-      sharedWith: [],
-      title,
-      categoryId,
-      emoji,
-      items: items || [],
-    });
-
-    res.json(newList);
+app.post('/lists', async (req, res) => {
+  try {
+    await handleCreateList(req, res);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Failed to create list' });
@@ -64,11 +154,16 @@ app.post('/create-list', async (req, res) => {
 
 app.get('/my-lists', async (req, res) => {
   try {
-    const userId = req.headers['x-user-id'] as string;
-    const allLists = await List.findAll();
-    const myLists = allLists.filter((l: any) => l.ownerId === userId || (l.sharedWith && l.sharedWith.includes(userId)));
+    await handleGetMyLists(req, res);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to fetch lists' });
+  }
+});
 
-    res.json(myLists);
+app.get('/lists', async (req, res) => {
+  try {
+    await handleGetMyLists(req, res);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Failed to fetch lists' });
@@ -77,26 +172,25 @@ app.get('/my-lists', async (req, res) => {
 
 app.get('/list/:id', async (req, res) => {
   try {
-    const userId = req.headers['x-user-id'] as string;
-    const { id } = req.params;
-
-    const list: any = await List.findByPk(id);
-    if (!list) {
-      res.status(404).json({ error: 'List not found' });
+    await handleGetList(req, res);
+  } catch (err) {
+    if (err instanceof NotFoundError) {
+      res.status(404).json({ error: err.message });
       return;
     }
+    console.error(err);
+    res.status(500).json({ error: 'Failed to fetch list' });
+  }
+});
 
-    if (list.ownerId !== userId && (!list.sharedWith || !list.sharedWith.includes(userId))) {
-      let shared = list.sharedWith || [];
-      if (!Array.isArray(shared)) shared = [];
-      shared.push(userId);
-      list.sharedWith = shared;
-      list.changed('sharedWith', true);
-      await list.save();
-    }
-
-    res.json(list);
+app.get('/lists/:id', async (req, res) => {
+  try {
+    await handleGetList(req, res);
   } catch (err) {
+    if (err instanceof NotFoundError) {
+      res.status(404).json({ error: err.message });
+      return;
+    }
     console.error(err);
     res.status(500).json({ error: 'Failed to fetch list' });
   }
@@ -104,51 +198,61 @@ app.get('/list/:id', async (req, res) => {
 
 app.put('/update-item', async (req, res) => {
   try {
-    const { listId, items, patch } = req.body;
-    const userId = req.headers['x-user-id'] as string;
-    
-    const list: any = await List.findByPk(listId);
-    if (!list) {
-       res.status(404).json({ error: 'List not found' });
-       return;
-    }
-    
-    if (list.ownerId !== userId && (!list.sharedWith || !list.sharedWith.includes(userId))) {
-       res.status(403).json({ error: 'Forbidden' });
-       return;
-    }
-
-    if (items) {
-      list.items = items;
-      list.changed('items', true);
-    }
-    
-    if (patch) {
-       if (patch.title !== undefined) list.title = patch.title;
-       if (patch.categoryId !== undefined) list.categoryId = patch.categoryId;
-       if (patch.emoji !== undefined) list.emoji = patch.emoji;
-    }
-    
-    await list.save();
-
-    res.json(list);
+    await handleUpdateList(req, res);
   } catch (err) {
+    if (err instanceof NotFoundError) {
+      res.status(404).json({ error: err.message });
+      return;
+    }
+    if (err instanceof ForbiddenError) {
+      res.status(403).json({ error: err.message });
+      return;
+    }
     console.error(err);
     res.status(500).json({ error: 'Failed to update items' });
   }
 });
 
+app.put('/lists/:id', async (req, res) => {
+  try {
+    await handleUpdateList(req, res);
+  } catch (err) {
+    if (err instanceof NotFoundError) {
+      res.status(404).json({ error: err.message });
+      return;
+    }
+    if (err instanceof ForbiddenError) {
+      res.status(403).json({ error: err.message });
+      return;
+    }
+    console.error(err);
+    res.status(500).json({ error: 'Failed to update list' });
+  }
+});
+
 app.delete('/list/:id', async (req, res) => {
   try {
-    const { id } = req.params;
-    const userId = req.headers['x-user-id'] as string;
-    const list: any = await List.findByPk(id);
-    if (list && list.ownerId === userId) {
-      await list.destroy();
-    }
-    res.json({ success: true });
+    await handleDeleteList(req, res);
   } catch (err) {
+    if (err instanceof ForbiddenError) {
+      res.status(403).json({ error: err.message });
+      return;
+    }
+    console.error(err);
     res.status(500).json({ error: 'Failed' });
+  }
+});
+
+app.delete('/lists/:id', async (req, res) => {
+  try {
+    await handleDeleteList(req, res);
+  } catch (err) {
+    if (err instanceof ForbiddenError) {
+      res.status(403).json({ error: err.message });
+      return;
+    }
+    console.error(err);
+    res.status(500).json({ error: 'Failed to delete list' });
   }
 });
 
@@ -166,8 +270,6 @@ io.on('connection', (socket) => {
   });
 });
 
-sequelize.sync({ alter: true }).then(() => {
-  server.listen(4000, () => {
-    console.log('Backend listening on port 4000');
-  });
+server.listen(env.port, () => {
+  console.log(`Backend listening on port ${env.port}`);
 });

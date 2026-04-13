@@ -10,24 +10,18 @@ import {
 import { defaultLists, templates } from "../data/templates";
 import type { CategoryId, SharePayload, SharedList, Unit, ListTemplate } from "../types";
 import { io } from "socket.io-client";
+import { useAuth } from "./auth-context";
 
 const API_URL = "http://localhost:4000";
 
-let ShadowUser = "";
-if (typeof window !== "undefined") {
-    ShadowUser = localStorage.getItem("ticksy-user-id") || "";
-    if (!ShadowUser) {
-        ShadowUser = "TK" + Math.random().toString(36).substring(2, 8).toUpperCase();
-        localStorage.setItem("ticksy-user-id", ShadowUser);
-    }
-}
-
-const reqHeaders = {
-    "Content-Type": "application/json",
-    "x-user-id": ShadowUser,
-};
-
 const socket = io(API_URL);
+
+function getRequestHeaders(userId: string): HeadersInit {
+    return {
+        "Content-Type": "application/json",
+        "x-user-id": userId,
+    };
+}
 
 interface ListsContextValue {
     lists: SharedList[];
@@ -80,6 +74,7 @@ function mapFromDb(dbList: any): SharedList {
 }
 
 export function ListsProvider({ children }: { children: ReactNode }) {
+    const { userId } = useAuth();
     const [lists, setLists] = useState<SharedList[]>([]);
     const [customTemplates, setCustomTemplates] = useState<ListTemplate[]>(() => {
         if (typeof window !== "undefined") {
@@ -96,7 +91,12 @@ export function ListsProvider({ children }: { children: ReactNode }) {
 
     // Initial fetch lists
     useEffect(() => {
-        fetch(`${API_URL}/my-lists`, { headers: reqHeaders })
+        if (!userId) {
+            setLists([]);
+            return;
+        }
+
+        fetch(`${API_URL}/my-lists`, { headers: getRequestHeaders(userId) })
             .then(res => res.json())
             .then(data => {
                 if (Array.isArray(data)) {
@@ -105,8 +105,8 @@ export function ListsProvider({ children }: { children: ReactNode }) {
             })
             .catch(console.error);
 
-        socket.on("list-sync", (data) => {
-            if (data.senderId === ShadowUser) return;
+        const handleListSync = (data: any) => {
+            if (data.senderId === userId) return;
             setLists((prev) => prev.map(l => {
                 if (l.id === data.listId) {
                     return {
@@ -117,12 +117,14 @@ export function ListsProvider({ children }: { children: ReactNode }) {
                 }
                 return l;
             }));
-        });
+        };
+
+        socket.on("list-sync", handleListSync);
 
         return () => {
-            socket.off("list-sync");
+            socket.off("list-sync", handleListSync);
         };
-    }, []);
+    }, [userId]);
 
     const persistTemplates = useCallback((nextState: ListTemplate[] | ((prev: ListTemplate[]) => ListTemplate[])) => {
         setCustomTemplates((previous) => {
@@ -145,10 +147,11 @@ export function ListsProvider({ children }: { children: ReactNode }) {
     }, [persistTemplates]);
 
     const createListToDb = useCallback(async (list: SharedList) => {
+        if (!userId) return;
         try {
             await fetch(`${API_URL}/create-list`, {
                 method: "POST",
-                headers: reqHeaders,
+                headers: getRequestHeaders(userId),
                 body: JSON.stringify({
                     listId: list.id,
                     title: list.title,
@@ -160,24 +163,25 @@ export function ListsProvider({ children }: { children: ReactNode }) {
         } catch (err) {
             console.error("Failed to create list backend", err);
         }
-    }, []);
+    }, [userId]);
 
     const syncListToDb = useCallback(async (listId: string, payload: any) => {
+        if (!userId) return;
         socket.emit("list-updated", {
             listId,
-            senderId: ShadowUser,
+            senderId: userId,
             ...payload
         });
         try {
             await fetch(`${API_URL}/update-item`, {
                 method: "PUT",
-                headers: reqHeaders,
+                headers: getRequestHeaders(userId),
                 body: JSON.stringify({ listId, ...payload })
             });
         } catch (err) {
             console.error(err);
         }
-    }, []);
+    }, [userId]);
 
     const createList = useCallback(
         (name: string, categoryId: CategoryId, emoji = "📝") => {
@@ -264,9 +268,10 @@ export function ListsProvider({ children }: { children: ReactNode }) {
     );
 
     const fetchListAndJoin = useCallback(async (listId: string) => {
+        if (!userId) return null;
         socket.emit("join-list", listId);
         try {
-            const res = await fetch(`${API_URL}/list/${listId}`, { headers: reqHeaders });
+            const res = await fetch(`${API_URL}/list/${listId}`, { headers: getRequestHeaders(userId) });
             if (!res.ok) return null;
             const data = await res.json();
             const mapped = mapFromDb(data);
@@ -280,7 +285,7 @@ export function ListsProvider({ children }: { children: ReactNode }) {
         } catch (e) {
             return null;
         }
-    }, []);
+    }, [userId]);
 
     const addItem = useCallback(
         (listId: string, item: { description: string; quantity?: string; unit?: Unit }) => {
@@ -375,15 +380,16 @@ export function ListsProvider({ children }: { children: ReactNode }) {
 
     const deleteList = useCallback(
         async (listId: string) => {
+            if (!userId) return;
             setLists((previous) => previous.filter((list) => list.id !== listId));
             try {
                 await fetch(`${API_URL}/list/${listId}`, {
                     method: 'DELETE',
-                    headers: reqHeaders
+                    headers: getRequestHeaders(userId)
                 });
             } catch (err) {}
         },
-        [],
+        [userId],
     );
 
     const updateList = useCallback(

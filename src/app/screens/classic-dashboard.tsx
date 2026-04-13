@@ -72,15 +72,15 @@ export function ClassicDashboard() {
           </div>
           <div className="flex items-center">
             <div className="flex items-center gap-2">
-            <button 
-              onClick={() => navigate("/alerts")}
-              className="p-2 text-muted-foreground hover:text-foreground md:hidden rounded-full transition-colors"
-            >
-              <Bell className="w-5 h-5" />
-            </button>
-            <ThemeToggle />
-            <LoginStatusButton />
-          </div>
+              <button
+                onClick={() => navigate("/alerts")}
+                className="p-2 text-muted-foreground hover:text-foreground md:hidden rounded-full transition-colors"
+              >
+                <Bell className="w-5 h-5" />
+              </button>
+              <ThemeToggle />
+              <LoginStatusButton />
+            </div>
           </div>
         </div>
       </div>
@@ -104,7 +104,7 @@ export function ClassicDashboard() {
         </motion.div>
 
         {/* Feature Cards Grid (Compact on Mobile, 3 cols) */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.1 }}
@@ -125,7 +125,7 @@ export function ClassicDashboard() {
               <Share2 className="w-5 h-5 sm:w-9 sm:h-9 text-[#E7A1B0]" strokeWidth={2.5} />
             </div>
           </button>
-          
+
           {/* Feature 2: Existing Lists */}
           <button
             onClick={() => { const el = document.getElementById('your-lists'); el?.scrollIntoView({ behavior: 'smooth' }); }}
@@ -160,7 +160,7 @@ export function ClassicDashboard() {
         </motion.div>
 
         {/* Smart Suggestions Card */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
@@ -182,7 +182,7 @@ export function ClassicDashboard() {
         </motion.div>
 
         {/* User's Existing Lists section */}
-        <motion.div 
+        <motion.div
           id="your-lists"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -190,7 +190,7 @@ export function ClassicDashboard() {
           className="mb-6 flex justify-between items-center scroll-mt-32"
         >
           <h2 className="text-xl font-bold text-foreground">Your Lists</h2>
-          <button 
+          <button
             onClick={() => navigate("/templates")}
             className="text-sm font-medium text-foreground/80 flex items-center gap-1 hover:underline"
           >
@@ -235,7 +235,7 @@ export function ClassicDashboard() {
       Wait, user said "make sure its responsive". The previous dashboard mapped 'Create List' and 'Browse Templates' to bottom fixed bar. I'll retain it for consistency, but hide it if we want. Actually, no, the new layout feels complete without the floating bottom bar since New List and Templates are at top now. 
       Instead of returning the old bottom bar which duplicates, I'll let the user's focus stay on the hero we just built.
       */}
-      
+
       {/* Mobile Floating Action Button (Optional) */}
       <div className="md:hidden fixed bottom-20 right-6 z-50">
         <button

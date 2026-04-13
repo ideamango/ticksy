@@ -66,14 +66,14 @@ export function Profile() {
       </div>
 
       <div className="p-6 sm:p-8 flex-1 w-full max-w-2xl mx-auto flex flex-col gap-8">
-        
+
         {/* Avatar & Name Section */}
         <div className="flex flex-col items-center">
-          <input 
-            type="file" 
-            accept="image/*" 
+          <input
+            type="file"
+            accept="image/*"
             ref={fileInputRef}
-            className="hidden" 
+            className="hidden"
             onChange={handleAvatarChange}
           />
           <div className="relative group cursor-pointer mb-3" onClick={() => fileInputRef.current?.click()}>
@@ -92,12 +92,12 @@ export function Profile() {
             Change Avatar
           </p>
           <p className="text-[10px] text-muted-foreground mt-1 mb-4 text-center">
-            Max size: 5MB.<br/>Recommended: 500x500px.
+            Max size: 5MB.<br />Recommended: 500x500px.
           </p>
 
           <div className="flex items-center gap-2 h-10">
             {isEditingName ? (
-              <input 
+              <input
                 type="text"
                 value={name}
                 onChange={e => setName(e.target.value)}
@@ -130,11 +130,11 @@ export function Profile() {
                 <p className="text-sm text-muted-foreground">Play a sound on new alerts</p>
               </div>
             </div>
-            <button 
+            <button
               onClick={() => setSoundEnabled(!soundEnabled)}
               className={`w-12 h-6 rounded-full flex items-center p-1 transition-colors ${soundEnabled ? 'bg-highlight' : 'bg-muted'}`}
             >
-              <motion.div 
+              <motion.div
                 layout
                 className={`w-4 h-4 rounded-full bg-white shadow-sm ${soundEnabled ? 'ml-auto' : ''}`}
               />
@@ -160,7 +160,7 @@ export function Profile() {
             <p className="text-sm font-medium text-muted-foreground">Templates</p>
           </div>
         </div>
-        
+
         {/* Save Actions */}
         <div className="mt-4 flex justify-end">
           <motion.button

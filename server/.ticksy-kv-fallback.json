@@ -1,0 +1,118 @@
+{
+  "user:TKSMOKETEST01": {
+    "userId": "TKSMOKETEST01",
+    "ownedListIds": [],
+    "sharedListIds": [],
+    "createdAt": 1776064263768,
+    "updatedAt": 1776064282029
+  },
+  "list-smoke-1": {
+    "listId": "list-smoke-1",
+    "ownerId": "TKSMOKETEST01",
+    "sharedWith": [],
+    "title": "Smoke List Updated",
+    "categoryId": "groceries",
+    "emoji": "🧪",
+    "items": [
+      {
+        "id": "item-1",
+        "description": "Milk",
+        "completed": false,
+        "createdAt": 1776064272000
+      }
+    ],
+    "createdAt": 1776064272946,
+    "updatedAt": 1776064281933,
+    "deletedAt": 1776064281933
+  },
+  "user:TKLOCALTEST01": {
+    "userId": "TKLOCALTEST01",
+    "ownedListIds": [],
+    "sharedListIds": [],
+    "createdAt": 1776066115659,
+    "updatedAt": 1776066137768
+  },
+  "list-local-test-01": {
+    "listId": "list-local-test-01",
+    "ownerId": "TKLOCALTEST01",
+    "sharedWith": [],
+    "title": "Local API Test Updated",
+    "categoryId": "groceries",
+    "emoji": "🧪",
+    "items": [
+      {
+        "id": "item-local-1",
+        "description": "Milk",
+        "completed": false,
+        "createdAt": 1776065000000
+      }
+    ],
+    "createdAt": 1776066116153,
+    "updatedAt": 1776066137674,
+    "deletedAt": 1776066137674
+  },
+  "user:TK00SV7LC8": {
+    "userId": "TK00SV7LC8",
+    "ownedListIds": [],
+    "sharedListIds": [],
+    "createdAt": 1776066559425,
+    "updatedAt": 1776066559425
+  },
+  "user:TKS6CB8T": {
+    "userId": "TKS6CB8T",
+    "ownedListIds": [
+      "list-1776077650125-4638"
+    ],
+    "sharedListIds": [],
+    "createdAt": 1776077110995,
+    "updatedAt": 1776077650686
+  },
+  "list-1776077650125-4638": {
+    "listId": "list-1776077650125-4638",
+    "ownerId": "TKS6CB8T",
+    "sharedWith": [],
+    "title": "groceries",
+    "categoryId": "groceries",
+    "emoji": "🛒",
+    "items": [
+      {
+        "id": "item-1776077653793-8366",
+        "description": "a1",
+        "completed": false,
+        "createdAt": 1776077653793
+      },
+      {
+        "id": "item-1776077655242-2498",
+        "description": "b2",
+        "completed": false,
+        "createdAt": 1776077655242
+      },
+      {
+        "id": "item-1776077656267-718",
+        "description": "c3",
+        "completed": false,
+        "createdAt": 1776077656267
+      },
+      {
+        "id": "item-1776077657492-383",
+        "description": "d4",
+        "completed": false,
+        "createdAt": 1776077657492
+      },
+      {
+        "id": "item-1776077659142-8844",
+        "description": "e5",
+        "completed": false,
+        "createdAt": 1776077659142
+      },
+      {
+        "id": "item-1776077660692-2694",
+        "description": "f6",
+        "completed": false,
+        "createdAt": 1776077660692
+      }
+    ],
+    "createdAt": 1776077650535,
+    "updatedAt": 1776077660823
+  }
+}

@@ -1,27 +1,21 @@
-import { useEffect, useState } from "react";
 import { LogIn, UserRound } from "lucide-react";
-
-const STORAGE_KEY = "ticksy-user-id";
-
-function generateUserId(): string {
-    return `TK${Math.random().toString(36).slice(2, 8).toUpperCase()}`;
-}
+import { toast } from "sonner";
+import { useAuth } from "../context/auth-context";
 
 export function LoginStatusButton() {
-    const [userId, setUserId] = useState<string>("");
+    const { userId, login, isLoading, isLoggingIn } = useAuth();
 
-    useEffect(() => {
-        if (typeof window === "undefined") return;
-        const existing = window.localStorage.getItem(STORAGE_KEY) || "";
-        setUserId(existing);
-    }, []);
-
-    const handleLogin = () => {
-        if (typeof window === "undefined") return;
+    const handleLogin = async () => {
         if (userId) return;
-        const newId = generateUserId();
-        window.localStorage.setItem(STORAGE_KEY, newId);
-        setUserId(newId);
+        try {
+            const nextUserId = await login();
+            if (nextUserId) {
+                toast.success(`Logged in as ${nextUserId}`);
+            }
+        } catch (error) {
+            console.error(error);
+            toast.error("Failed to login");
+        }
     };
 
     if (userId) {
@@ -40,13 +34,14 @@ export function LoginStatusButton() {
     return (
         <button
             onClick={handleLogin}
-            className="h-9 px-3 rounded-full border border-border bg-background/70 hover:bg-muted/60 transition-colors text-xs font-semibold text-foreground flex items-center gap-1.5"
+            className="h-9 px-3 rounded-full border border-border bg-background/70 hover:bg-muted/60 transition-colors text-xs font-semibold text-foreground flex items-center gap-1.5 disabled:opacity-60 disabled:cursor-not-allowed"
             aria-label="Login"
             title="Login"
             type="button"
+            disabled={isLoading || isLoggingIn}
         >
             <LogIn className="w-3.5 h-3.5" />
-            Login
+            {isLoading || isLoggingIn ? "Loading..." : "Login"}
         </button>
     );
 }
