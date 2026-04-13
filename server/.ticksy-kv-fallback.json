@@ -114,5 +114,112 @@
     ],
     "createdAt": 1776077650535,
     "updatedAt": 1776077660823
+  },
+  "user:TK58VX2M": {
+    "userId": "TK58VX2M",
+    "ownedListIds": [
+      "list-1776080766112-132"
+    ],
+    "sharedListIds": [],
+    "createdAt": 1776080725336,
+    "updatedAt": 1776080766459
+  },
+  "list-1776080766112-132": {
+    "listId": "list-1776080766112-132",
+    "ownerId": "TK58VX2M",
+    "sharedWith": [
+      "TKW9HXQCNJ"
+    ],
+    "title": "Subagent Collab Test",
+    "categoryId": "groceries",
+    "emoji": "🛒",
+    "items": [
+      {
+        "id": "item-1776080799255-440",
+        "description": "User 1 Item",
+        "completed": false,
+        "createdAt": 1776080799255
+      },
+      {
+        "id": "item-1776081061136-1393",
+        "description": "User 2 Item",
+        "completed": false,
+        "createdAt": 1776081061136
+      }
+    ],
+    "createdAt": 1776080766315,
+    "updatedAt": 1776081061365
+  },
+  "user:TKW9HXQCNJ": {
+    "userId": "TKW9HXQCNJ",
+    "ownedListIds": [
+      "list-1776082624644-6861"
+    ],
+    "sharedListIds": [
+      "list-1776080766112-132"
+    ],
+    "createdAt": 1776081020486,
+    "updatedAt": 1776082627151
+  },
+  "list-1776082624644-6861": {
+    "listId": "list-1776082624644-6861",
+    "ownerId": "TKW9HXQCNJ",
+    "sharedWith": [],
+    "title": "ratnadeep list",
+    "categoryId": "groceries",
+    "emoji": "🛒",
+    "items": [
+      {
+        "id": "item-1776082629597-3229",
+        "description": "bell pepper",
+        "completed": false,
+        "createdAt": 1776082629597
+      },
+      {
+        "id": "item-1776082630843-5868",
+        "description": "corn",
+        "completed": false,
+        "createdAt": 1776082630843
+      },
+      {
+        "id": "item-1776082632529-8120",
+        "description": "beans",
+        "completed": false,
+        "createdAt": 1776082632529
+      },
+      {
+        "id": "item-1776082635529-6956",
+        "description": "watermelon",
+        "completed": false,
+        "createdAt": 1776082635529
+      },
+      {
+        "id": "item-1776082638117-4329",
+        "description": "muskmelon",
+        "completed": false,
+        "createdAt": 1776082638117
+      },
+      {
+        "id": "item-1776082641230-4900",
+        "description": "carrots",
+        "completed": false,
+        "createdAt": 1776082641230
+      },
+      {
+        "id": "item-1776082645536-2342",
+        "description": "avocado",
+        "completed": false,
+        "createdAt": 1776082645536
+      }
+    ],
+    "createdAt": 1776082627008,
+    "updatedAt": 1776082645706
+  },
+  "user:72460159-57be-46d9-b6a9-444513a04cef": {
+    "userId": "72460159-57be-46d9-b6a9-444513a04cef",
+    "ownedListIds": [],
+    "sharedListIds": [],
+    "createdAt": 1776093628021,
+    "updatedAt": 1776093628021
   }
 }

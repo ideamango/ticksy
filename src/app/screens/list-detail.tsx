@@ -26,7 +26,7 @@ import { LoginStatusButton } from "../components/login-status-button";
 export function ListDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { getListById, fetchListAndJoin, addItem, toggleItem, deleteItem, buildShareToken, updateItem, createList, createListWithItems, deleteList, lists } = useLists();
+  const { getListById, fetchListAndJoin, addItem, toggleItem, deleteItem, buildShareToken, updateItem, createList, createListWithItems, deleteList, lists, setFocusedListId } = useLists();
   const [newItemName, setNewItemName] = useState("");
   const [newItemQuantity, setNewItemQuantity] = useState("");
   const [newItemUnit, setNewItemUnit] = useState(unitOptions[0]);
@@ -42,8 +42,10 @@ export function ListDetail() {
   useEffect(() => {
     if (id) {
       fetchListAndJoin(id);
+      setFocusedListId(id);
     }
-  }, [id, fetchListAndJoin]);
+    return () => setFocusedListId(null);
+  }, [id, fetchListAndJoin, setFocusedListId]);
 
   const completedCount = list?.items.filter((item) => item.completed).length ?? 0;
   const totalCount = list?.items.length ?? 0;
@@ -119,7 +121,7 @@ export function ListDetail() {
   const token = list ? buildShareToken(list.id) : null;
   const baseUrl = window.location.origin;
   const shareLink = token
-    ? `${baseUrl}/?import=${token}`
+    ? `${baseUrl}/list/${token}`
     : window.location.href;
 
   return (
