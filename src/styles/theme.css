@@ -3,134 +3,118 @@
 :root {
   --font-size: 16px;
   
-  /* Monochromatic Light: Anthropic-inspired Cream & Ink Palette */
-  --background: #F5F2ED; /* Cream/Bone */
-  --foreground: #1A1A1A; /* Deep Ink */
+  /* Monochromatic Light: Cal.com inspired */
+  --background: #ffffff;
+  --foreground: #242424;
   
-  --card: #FFFFFF;
-  --card-foreground: #1A1A1A;
+  --card: #ffffff;
+  --card-foreground: #242424;
   
-  --popover: #FFFFFF;
-  --popover-foreground: #1A1A1A;
+  --popover: #ffffff;
+  --popover-foreground: #242424;
   
-  /* Primary: Deep Ink (monochromatic) */
-  --primary: #1A1A1A;
-  --primary-foreground: #FFFFFF;
+  --primary: #242424;
+  --primary-foreground: #ffffff;
   
-  /* Secondary: Muted Stone */
-  --secondary: #EAE6E1;
-  --secondary-foreground: #1A1A1A;
+  --secondary: #f5f5f5;
+  --secondary-foreground: #242424;
   
-  /* Accent: Slate Gray */
-  --accent: #64748b;
-  --accent-foreground: #FFFFFF;
+  --accent: #f5f5f5;
+  --accent-foreground: #242424;
   
-  --muted: #EAE6E1;
-  --muted-foreground: #6B6B6B;
+  --muted: #f5f5f5;
+  --muted-foreground: #898989;
   
   --destructive: #991b1b;
   --destructive-foreground: #FFFFFF;
   
-  --border: rgba(0, 0, 0, 0.1);
+  --border: rgba(34, 42, 53, 0.08);
   --input: transparent;
-  --input-background: #FFFFFF;
+  --input-background: #ffffff;
   --switch-background: #D1D1D1;
   --font-weight-medium: 600;
   --font-weight-normal: 400;
-  --ring: rgba(26, 26, 26, 0.2);
+  --ring: #3b82f6;
   
-  --success: #1A1A1A; /* Monochromatic success */
-  --success-foreground: #FFFFFF;
+  --success: #242424;
+  --success-foreground: #ffffff;
   
-  --radius: 0.75rem;
+  --radius: 0.5rem;
 
   /* Brand Theme Tokens */
-  --modal-input-bg: #FFFFFF;             /* Input row bg in modals (light) */
-  --modal-item-bg: #F5F2ED;              /* Existing list item row bg (light) */
-  --checkbox-highlight: #FDCA8C;         /* Brand checkbox accent color */
-  --btn-border-radius: 0.5rem;            /* Softer modern roundness for buttons */
-  --cancel-btn-border: rgba(0,0,0,0.25); /* Visible border on cancel button */
-  --list-item-gap: 0.25rem;             /* Compact gap between list items */
-  --sidebar: #F5F2ED;
-  --sidebar-foreground: #1A1A1A;
-  --sidebar-primary: #1A1A1A;
-  --sidebar-primary-foreground: #FFFFFF;
-  --sidebar-accent: #EAE6E1;
-  --sidebar-accent-foreground: #1A1A1A;
-  --sidebar-border: rgba(0, 0, 0, 0.1);
-  --sidebar-ring: rgba(26, 26, 26, 0.2);
+  --modal-input-bg: #ffffff;
+  --modal-item-bg: #f5f5f5;
+  --checkbox-highlight: #242424;
+  --btn-border-radius: 6px;
+  --cancel-btn-border: rgba(34, 42, 53, 0.08);
+  --list-item-gap: 0.25rem;
+  
+  --sidebar: #ffffff;
+  --sidebar-foreground: #242424;
+  --sidebar-primary: #242424;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #f5f5f5;
+  --sidebar-accent-foreground: #242424;
+  --sidebar-border: rgba(34, 42, 53, 0.08);
+  --sidebar-ring: #3b82f6;
 
-  /* Vibrant Highlight: Peach to Purple Gradient */
-  --highlight: linear-gradient(135deg, #FDCA8C 0%, #E7A1B0 50%, #C5A3FF 100%);
-  --highlight-foreground: #1A1A1A;
+  --highlight: #242424;
+  --highlight-foreground: #ffffff;
 }
 
 .dark {
   /* Headless UI Dark: Pure Black & High Contrast */
-  --background: #000000; /* Level 0: Deepest Background */
-  --foreground: #FFFFFF; /* High contrast white */
+  --background: #111111;
+  --foreground: #ffffff;
   
-  /* Shade Hierarchy */
-  --level-1: rgba(255, 255, 255, 0.03); /* Subtle backdrop */
-  --level-2: #18181B; /* Zinc-900 (Cards/Panels) */
-  --level-3: #27272A; /* Zinc-800 (Pop-ups/Modals) */
+  --level-1: #111111;
+  --level-2: #1e1e1e;
+  --level-3: #242424;
 
-  --card: var(--level-2);
-  --card-foreground: #E0E0E0;
+  --card: var(--level-1);
+  --card-foreground: #ffffff;
   
-  --popover: var(--level-3);
-  --popover-foreground: #E0E0E0;
+  --popover: var(--level-2);
+  --popover-foreground: #ffffff;
   
-  /* Primary: White */
-  --primary: #FFFFFF;
-  --primary-foreground: #000000;
+  --primary: #ffffff;
+  --primary-foreground: #111111;
   
-  /* Secondary: Muted */
-  --secondary: rgba(255, 255, 255, 0.1);
-  --secondary-foreground: #FFFFFF;
+  --secondary: #1e1e1e;
+  --secondary-foreground: #ffffff;
   
-  /* Accent: Hover state */
-  --accent: rgba(255, 255, 255, 0.2);
-  --accent-foreground: #FFFFFF;
+  --accent: #242424;
+  --accent-foreground: #ffffff;
   
-  --muted: rgba(255, 255, 255, 0.05);
-  --muted-foreground: #A1A1AA; /* Zinc-400 */
+  --muted: #242424;
+  --muted-foreground: #898989; 
   
   --destructive: #ef4444;
-  --destructive-foreground: #FFFFFF;
+  --destructive-foreground: #ffffff;
   
-  /* Sharper borders typical of Headless UI */
   --border: rgba(255, 255, 255, 0.1);
   --input: transparent;
   --input-background: rgba(255, 255, 255, 0.03);
   --switch-background: rgba(255, 255, 255, 0.1);
-  --ring: rgba(255, 255, 255, 0.3);
+  --ring: #3b82f6;
 
-  /* Brand Theme Tokens (dark overrides) */
-  --modal-input-bg: #27272A;             /* Input row bg in modals (dark) */
-  --modal-item-bg: #27272A;              /* Existing list item row bg (dark) */
-  --checkbox-highlight: #FDCA8C;         /* Brand checkbox accent (same vibrant) */
-  --btn-border-radius: 0.5rem;
-  --cancel-btn-border: rgba(255,255,255,0.25);
-  --list-item-gap: 0.25rem;
-  --font-weight-medium: 500;
-  --font-weight-normal: 400;
+  --modal-input-bg: #1e1e1e;
+  --modal-item-bg: #1e1e1e;
+  --checkbox-highlight: #ffffff; 
+  --btn-border-radius: 6px;
+  --cancel-btn-border: rgba(255,255,255,0.1);
   
-  --success: #E0E0E0;
-  --success-foreground: #050505;
-  
-  --sidebar: #050505;
-  --sidebar-foreground: #E0E0E0;
-  --sidebar-primary: #E0E0E0;
-  --sidebar-primary-foreground: #050505;
-  --sidebar-accent: #121212;
-  --sidebar-accent-foreground: #E0E0E0;
-  --sidebar-border: rgba(255, 255, 255, 0.05);
-  --sidebar-ring: rgba(224, 224, 224, 0.2);
+  --sidebar: #111111;
+  --sidebar-foreground: #ffffff;
+  --sidebar-primary: #ffffff;
+  --sidebar-primary-foreground: #111111;
+  --sidebar-accent: #1e1e1e;
+  --sidebar-accent-foreground: #ffffff;
+  --sidebar-border: rgba(255, 255, 255, 0.1);
+  --sidebar-ring: #3b82f6;
 
-  /* Vibrant Highlight (same for dark mode to provide "pop") */
-  --highlight: linear-gradient(135deg, #FDCA8C 0%, #E7A1B0 50%, #C5A3FF 100%);
-  --highlight-foreground: #050505;
+  --highlight: #ffffff;
+  --highlight-foreground: #111111;
 }
 
 @theme inline {
@@ -138,6 +122,8 @@
   --color-foreground: var(--foreground);
   --color-card: var(--card);
   --color-card-foreground: var(--card-foreground);
+  --shadow-cal-card: 0px 1px 5px -4px rgba(19, 19, 22, 0.7), 0px 0px 0px 1px rgba(34, 42, 53, 0.08), 0px 4px 8px 0px rgba(34, 42, 53, 0.05);
+  --shadow-cal-button: 0px 2px 0px inset rgba(255, 255, 255, 0.15);
   --color-popover: var(--popover);
   --color-popover-foreground: var(--popover-foreground);
   --color-primary: var(--primary);
@@ -178,7 +164,7 @@
 
   --background-image-highlight: var(--highlight);
   --color-highlight-foreground: var(--highlight-foreground);
-
+  --color-highlight: var(--highlight);
 }
 
 @layer base {
@@ -190,31 +176,21 @@
     @apply bg-background text-foreground transition-colors duration-300;
   }
 
-  .dark body {
-    background-image: 
-      radial-gradient(circle at 80% -20%, rgba(124, 58, 237, 0.15), transparent 40%),
-      radial-gradient(circle at 10% 110%, rgba(14, 165, 233, 0.12), transparent 40%);
-    background-attachment: fixed;
-  }
-
+  /* Extracted custom background behavior */
   html {
     font-size: var(--font-size);
-    /* Forcer background behavior for dark mode root */
-    &.dark {
-      background-color: var(--background);
-    }
   }
 
   h1, h2, h3, h4 {
     @apply tracking-tight;
     font-weight: var(--font-weight-medium);
-    line-height: 1.2;
+    line-height: 1.1;
   }
 
-  h1 { font-size: var(--text-3xl); }
-  h2 { font-size: var(--text-2xl); }
-  h3 { font-size: var(--text-xl); }
-  h4 { font-size: var(--text-lg); }
+  h1 { font-size: var(--text-4xl); font-family: 'Outfit', sans-serif;}
+  h2 { font-size: var(--text-3xl); font-family: 'Outfit', sans-serif;}
+  h3 { font-size: var(--text-2xl); font-family: 'Outfit', sans-serif;}
+  h4 { font-size: var(--text-xl); font-family: 'Outfit', sans-serif;}
 
   label, button {
     font-size: var(--text-base);

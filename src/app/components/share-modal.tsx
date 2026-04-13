@@ -104,7 +104,7 @@ export function ShareModal({ isOpen, onClose, listName, shareLink }: ShareModalP
         </div>
 
         <div className="flex items-center gap-4 mb-6">
-          <div className="p-4 bg-[var(--modal-item-bg)] border border-border rounded-xl">
+          <div className="p-4 bg-secondary/10 rounded-2xl">
             <LinkIcon className="w-8 h-8 text-secondary" />
           </div>
           <div className="flex-1 min-w-0">
@@ -113,7 +113,7 @@ export function ShareModal({ isOpen, onClose, listName, shareLink }: ShareModalP
           </div>
         </div>
 
-        <div className="bg-[var(--modal-item-bg)] border border-border rounded-xl p-4 mb-4 overflow-hidden">
+        <div className="bg-muted/50 rounded-2xl p-4 mb-4 overflow-hidden">
           <div className="overflow-x-auto">
             <p className="text-sm text-foreground font-mono whitespace-nowrap min-w-max">
               {effectiveShareLink}
@@ -124,13 +124,9 @@ export function ShareModal({ isOpen, onClose, listName, shareLink }: ShareModalP
         <motion.button
           onClick={handleCopy}
           className={`
-            w-full py-4 px-4 font-bold transition-all shadow-md mt-4 flex items-center justify-center gap-2
-            ${copied ? "bg-highlight text-highlight-foreground" : "bg-card border border-border text-foreground hover:bg-muted/40"}
+            w-full py-3 px-4 rounded-2xl font-semibold transition-all flex items-center justify-center gap-2
+            ${copied ? "bg-primary text-primary-foreground" : "bg-secondary text-secondary-foreground"}
           `}
-          style={{ 
-            borderRadius: "var(--btn-border-radius)",
-            border: copied ? "none" : "1px solid var(--cancel-btn-border)"
-          }}
           whileTap={{ scale: 0.98 }}
         >
           {copied ? (
@@ -150,8 +146,7 @@ export function ShareModal({ isOpen, onClose, listName, shareLink }: ShareModalP
           href={whatsappLink}
           target="_blank"
           rel="noreferrer"
-          className="mt-3 block w-full py-4 px-4 font-bold text-center bg-highlight text-highlight-foreground shadow-md"
-          style={{ borderRadius: "var(--btn-border-radius)" }}
+          className="mt-3 block w-full py-3 px-4 rounded-2xl font-semibold text-center bg-primary text-primary-foreground"
         >
           Share on WhatsApp
         </a>

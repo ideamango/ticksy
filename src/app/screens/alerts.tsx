@@ -1,5 +1,6 @@
 import { motion } from "motion/react";
 import { ThemeToggle } from "../components/theme-toggle";
+import { LoginStatusButton } from "../components/login-status-button";
 import { Bell, UserPlus, Info, Check, X, ChevronLeft } from "lucide-react";
 import { useNavigate } from "react-router";
 import { useState } from "react";
@@ -81,7 +82,10 @@ export function Alerts() {
             </span>
           </h1>
         </div>
-        <ThemeToggle />
+        <div className="flex items-center gap-2">
+          <ThemeToggle />
+          <LoginStatusButton />
+        </div>
       </div>
 
       <div className="p-6 sm:p-8 flex-1 w-full max-w-2xl mx-auto flex flex-col mt-4">

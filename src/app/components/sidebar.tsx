@@ -1,6 +1,6 @@
 import { motion } from "motion/react";
 import { ThemeToggle } from "./theme-toggle";
-import { CheckSquare, FileText, LayoutGrid, Box, Globe, Bell, User } from "lucide-react";
+import { CheckSquare, FileText, LayoutGrid, Bell, User } from "lucide-react";
 import { useNavigate } from "react-router";
 
 export function Sidebar() {
@@ -8,7 +8,7 @@ export function Sidebar() {
   return (
     <div className="w-16 lg:w-20 hidden md:flex flex-col items-center py-6 border-r border-border bg-card shadow-sm h-full rounded-l-2xl z-50 fixed left-0 top-0 bottom-0">
       <div className="flex flex-col items-center gap-6 w-full">
-        <button 
+        <button
           onClick={() => navigate("/")}
           className="p-2 sm:p-2.5 rounded-xl bg-highlight shadow-sm hover:opacity-90 transition-opacity"
         >
@@ -24,12 +24,6 @@ export function Sidebar() {
         </button>
         <button onClick={() => navigate("/templates")} className="p-3 text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-xl transition-all">
           <LayoutGrid className="w-5 h-5" />
-        </button>
-        <button onClick={() => navigate("/")} className="p-3 text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-xl transition-all">
-          <Box className="w-5 h-5" />
-        </button>
-        <button onClick={() => navigate("/")} className="p-3 text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-xl transition-all">
-          <Globe className="w-5 h-5" />
         </button>
       </div>
 

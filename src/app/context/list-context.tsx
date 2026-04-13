@@ -4,14 +4,30 @@ import {
     useContext,
     useMemo,
     useState,
+    useEffect,
     type ReactNode,
 } from "react";
 import { defaultLists, templates } from "../data/templates";
 import type { CategoryId, SharePayload, SharedList, Unit, ListTemplate } from "../types";
+import { io } from "socket.io-client";
 
-// Storage keys for local persistence. We keep the old key for migration.
-const STORAGE_KEY = "ticksy-data-v1";
-const LEGACY_STORAGE_KEY = "shared-list-app-v1";
+const API_URL = "http://localhost:4000";
+
+let ShadowUser = "";
+if (typeof window !== "undefined") {
+    ShadowUser = localStorage.getItem("ticksy-user-id") || "";
+    if (!ShadowUser) {
+        ShadowUser = "TK" + Math.random().toString(36).substring(2, 8).toUpperCase();
+        localStorage.setItem("ticksy-user-id", ShadowUser);
+    }
+}
+
+const reqHeaders = {
+    "Content-Type": "application/json",
+    "x-user-id": ShadowUser,
+};
+
+const socket = io(API_URL);
 
 interface ListsContextValue {
     lists: SharedList[];
@@ -19,6 +35,7 @@ interface ListsContextValue {
     createListWithItems: (name: string, categoryId: CategoryId, emoji: string | undefined, items: Array<{ description: string; quantity?: string; unit?: Unit }>) => SharedList;
     createFromTemplate: (templateId: string, customName?: string) => SharedList | null;
     getListById: (id: string) => SharedList | undefined;
+    fetchListAndJoin: (id: string) => Promise<SharedList | null>;
     addItem: (listId: string, item: { description: string; quantity?: string; unit?: Unit }) => void;
     toggleItem: (listId: string, itemId: string) => void;
     deleteItem: (listId: string, itemId: string) => void;
@@ -53,52 +70,17 @@ function createId(prefix: string): string {
     return `${prefix}-${Date.now()}-${Math.floor(Math.random() * 10000)}`;
 }
 
-function toBase64Url(input: string): string {
-    return btoa(unescape(encodeURIComponent(input)))
-        .replace(/\+/g, "-")
-        .replace(/\//g, "_")
-        .replace(/=+$/g, "");
-}
-
-function fromBase64Url(input: string): string {
-    const padded = input.padEnd(Math.ceil(input.length / 4) * 4, "=").replace(/-/g, "+").replace(/_/g, "/");
-    return decodeURIComponent(escape(atob(padded)));
-}
-
-function loadLists(): SharedList[] {
-    if (typeof window === "undefined") {
-        return defaultLists;
-    }
-
-    // If new key is not present but legacy key exists, migrate it.
-    const legacyRaw = window.localStorage.getItem(LEGACY_STORAGE_KEY);
-    const newRaw = window.localStorage.getItem(STORAGE_KEY);
-
-    if (!newRaw && legacyRaw) {
-        try {
-            const parsedLegacy = JSON.parse(legacyRaw) as SharedList[];
-            if (Array.isArray(parsedLegacy) && parsedLegacy.length) {
-                window.localStorage.setItem(STORAGE_KEY, JSON.stringify(parsedLegacy));
-                // keep legacy for safety, but future writes will go to new key
-                return parsedLegacy;
-            }
-        } catch {
-            // fallthrough to try new key
-        }
-    }
-
-    if (!newRaw) return defaultLists;
-
-    try {
-        const parsed = JSON.parse(newRaw) as SharedList[];
-        return parsed.length ? parsed : defaultLists;
-    } catch {
-        return defaultLists;
-    }
+// Convert Backend List to Frontend List format
+function mapFromDb(dbList: any): SharedList {
+    return {
+        ...dbList,
+        id: dbList.listId || dbList.id,
+        items: typeof dbList.items === 'string' ? JSON.parse(dbList.items) : dbList.items || []
+    };
 }
 
 export function ListsProvider({ children }: { children: ReactNode }) {
-    const [lists, setLists] = useState<SharedList[]>(() => loadLists());
+    const [lists, setLists] = useState<SharedList[]>([]);
     const [customTemplates, setCustomTemplates] = useState<ListTemplate[]>(() => {
         if (typeof window !== "undefined") {
             const raw = window.localStorage.getItem("ticksy-templates-v1");
@@ -111,6 +93,36 @@ export function ListsProvider({ children }: { children: ReactNode }) {
         }
         return [];
     });
+
+    // Initial fetch lists
+    useEffect(() => {
+        fetch(`${API_URL}/my-lists`, { headers: reqHeaders })
+            .then(res => res.json())
+            .then(data => {
+                if (Array.isArray(data)) {
+                    setLists(data.map(mapFromDb));
+                }
+            })
+            .catch(console.error);
+
+        socket.on("list-sync", (data) => {
+            if (data.senderId === ShadowUser) return;
+            setLists((prev) => prev.map(l => {
+                if (l.id === data.listId) {
+                    return {
+                        ...l,
+                        ...(data.items ? { items: data.items } : {}),
+                        ...(data.patch ? { ...data.patch } : {})
+                    };
+                }
+                return l;
+            }));
+        });
+
+        return () => {
+            socket.off("list-sync");
+        };
+    }, []);
 
     const persistTemplates = useCallback((nextState: ListTemplate[] | ((prev: ListTemplate[]) => ListTemplate[])) => {
         setCustomTemplates((previous) => {
@@ -132,18 +144,40 @@ export function ListsProvider({ children }: { children: ReactNode }) {
         ]);
     }, [persistTemplates]);
 
-    const persist = useCallback(
-        (nextState: SharedList[] | ((previous: SharedList[]) => SharedList[])) => {
-            setLists((previous) => {
-                const nextLists = typeof nextState === "function" ? nextState(previous) : nextState;
-                if (typeof window !== "undefined") {
-                    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(nextLists));
-                }
-                return nextLists;
+    const createListToDb = useCallback(async (list: SharedList) => {
+        try {
+            await fetch(`${API_URL}/create-list`, {
+                method: "POST",
+                headers: reqHeaders,
+                body: JSON.stringify({
+                    listId: list.id,
+                    title: list.title,
+                    categoryId: list.categoryId,
+                    emoji: list.emoji,
+                    items: list.items,
+                })
             });
-        },
-        [],
-    );
+        } catch (err) {
+            console.error("Failed to create list backend", err);
+        }
+    }, []);
+
+    const syncListToDb = useCallback(async (listId: string, payload: any) => {
+        socket.emit("list-updated", {
+            listId,
+            senderId: ShadowUser,
+            ...payload
+        });
+        try {
+            await fetch(`${API_URL}/update-item`, {
+                method: "PUT",
+                headers: reqHeaders,
+                body: JSON.stringify({ listId, ...payload })
+            });
+        } catch (err) {
+            console.error(err);
+        }
+    }, []);
 
     const createList = useCallback(
         (name: string, categoryId: CategoryId, emoji = "📝") => {
@@ -157,10 +191,11 @@ export function ListsProvider({ children }: { children: ReactNode }) {
                 updatedAt: now,
                 items: [],
             };
-            persist((previous) => [newList, ...previous]);
+            setLists((previous) => [newList, ...previous]);
+            createListToDb(newList);
             return newList;
         },
-        [persist],
+        [createListToDb],
     );
 
     const createListWithItems = useCallback(
@@ -182,10 +217,11 @@ export function ListsProvider({ children }: { children: ReactNode }) {
                     createdAt: now,
                 })),
             };
-            persist((previous) => [newList, ...previous]);
+            setLists((previous) => [newList, ...previous]);
+            createListToDb(newList);
             return newList;
         },
-        [persist],
+        [createListToDb],
     );
 
     const createFromTemplate = useCallback(
@@ -213,10 +249,11 @@ export function ListsProvider({ children }: { children: ReactNode }) {
                 })),
             };
 
-            persist((previous) => [list, ...previous]);
+            setLists((previous) => [list, ...previous]);
+            createListToDb(list);
             return list;
         },
-        [persist, customTemplates],
+        [createListToDb, customTemplates],
     );
 
     const getListById = useCallback(
@@ -226,182 +263,166 @@ export function ListsProvider({ children }: { children: ReactNode }) {
         [lists],
     );
 
+    const fetchListAndJoin = useCallback(async (listId: string) => {
+        socket.emit("join-list", listId);
+        try {
+            const res = await fetch(`${API_URL}/list/${listId}`, { headers: reqHeaders });
+            if (!res.ok) return null;
+            const data = await res.json();
+            const mapped = mapFromDb(data);
+            setLists(prev => {
+                if (prev.find(p => p.id === mapped.id)) {
+                    return prev.map(p => p.id === mapped.id ? mapped : p);
+                }
+                return [mapped, ...prev];
+            });
+            return mapped;
+        } catch (e) {
+            return null;
+        }
+    }, []);
+
     const addItem = useCallback(
         (listId: string, item: { description: string; quantity?: string; unit?: Unit }) => {
             const now = Date.now();
-            persist((previous) =>
+            let newItems: any[] = [];
+            setLists((previous) =>
                 previous.map((list) => {
                     if (list.id !== listId) return list;
-                    return {
-                        ...list,
-                        updatedAt: now,
-                        items: [
-                            ...list.items,
-                            {
-                                id: createId("item"),
-                                description: item.description,
-                                quantity: item.quantity,
-                                unit: item.unit,
-                                completed: false,
-                                createdAt: now,
-                            },
-                        ],
-                    };
+                    newItems = [
+                        ...list.items,
+                        {
+                            id: createId("item"),
+                            description: item.description,
+                            quantity: item.quantity,
+                            unit: item.unit,
+                            completed: false,
+                            createdAt: now,
+                        },
+                    ];
+                    return { ...list, updatedAt: now, items: newItems };
                 }),
             );
+            // After state update, sync:
+            setTimeout(() => syncListToDb(listId, { items: newItems }), 0);
         },
-        [persist],
+        [syncListToDb],
     );
 
     const toggleItem = useCallback(
         (listId: string, itemId: string) => {
             const now = Date.now();
-            persist((previous) =>
+            let newItems: any[] = [];
+            setLists((previous) =>
                 previous.map((list) => {
                     if (list.id !== listId) return list;
-                    return {
-                        ...list,
-                        updatedAt: now,
-                        items: list.items.map((item) => {
-                            if (item.id !== itemId) return item;
-                            const nextCompleted = !item.completed;
-                            return {
-                                ...item,
-                                completed: nextCompleted,
-                                completedAt: nextCompleted ? now : undefined,
-                            };
-                        }),
-                    };
+                    newItems = list.items.map((item) => {
+                        if (item.id !== itemId) return item;
+                        const nextCompleted = !item.completed;
+                        return {
+                            ...item,
+                            completed: nextCompleted,
+                            completedAt: nextCompleted ? now : undefined,
+                        };
+                    });
+                    return { ...list, updatedAt: now, items: newItems };
                 }),
             );
+            setTimeout(() => syncListToDb(listId, { items: newItems }), 0);
         },
-        [persist],
+        [syncListToDb],
     );
 
     const deleteItem = useCallback(
         (listId: string, itemId: string) => {
             const now = Date.now();
-            persist((previous) =>
+            let newItems: any[] = [];
+            setLists((previous) =>
                 previous.map((list) => {
                     if (list.id !== listId) return list;
-                    return {
-                        ...list,
-                        updatedAt: now,
-                        items: list.items.filter((item) => item.id !== itemId),
-                    };
+                    newItems = list.items.filter((item) => item.id !== itemId);
+                    return { ...list, updatedAt: now, items: newItems };
                 }),
             );
+            setTimeout(() => syncListToDb(listId, { items: newItems }), 0);
         },
-        [persist],
+        [syncListToDb],
     );
 
     const updateItem = useCallback(
         (listId: string, itemId: string, patch: { description?: string; quantity?: string; unit?: Unit }) => {
             const now = Date.now();
-            persist((previous) =>
+            let newItems: any[] = [];
+            setLists((previous) =>
                 previous.map((list) => {
                     if (list.id !== listId) return list;
-                    return {
-                        ...list,
-                        updatedAt: now,
-                        items: list.items.map((item) => {
-                            if (item.id !== itemId) return item;
-                            return {
-                                ...item,
-                                description: patch.description ?? item.description,
-                                quantity: patch.quantity ?? item.quantity,
-                                unit: patch.unit ?? item.unit,
-                            };
-                        }),
-                    };
+                    newItems = list.items.map((item) => {
+                        if (item.id !== itemId) return item;
+                        return {
+                            ...item,
+                            description: patch.description ?? item.description,
+                            quantity: patch.quantity ?? item.quantity,
+                            unit: patch.unit ?? item.unit,
+                        };
+                    });
+                    return { ...list, updatedAt: now, items: newItems };
                 }),
             );
+            setTimeout(() => syncListToDb(listId, { items: newItems }), 0);
         },
-        [persist],
+        [syncListToDb],
     );
 
     const deleteList = useCallback(
-        (listId: string) => {
-            persist((previous) => previous.filter((list) => list.id !== listId));
+        async (listId: string) => {
+            setLists((previous) => previous.filter((list) => list.id !== listId));
+            try {
+                await fetch(`${API_URL}/list/${listId}`, {
+                    method: 'DELETE',
+                    headers: reqHeaders
+                });
+            } catch (err) {}
         },
-        [persist],
+        [],
     );
 
     const updateList = useCallback(
         (listId: string, patch: { title?: string; emoji?: string; categoryId?: CategoryId }) => {
             const now = Date.now();
-            persist((previous) =>
+            let safePatch = {} as any;
+            setLists((previous) =>
                 previous.map((list) => {
                     if (list.id !== listId) return list;
-                    return {
-                        ...list,
+                    safePatch = {
                         title: patch.title !== undefined ? patch.title : list.title,
                         emoji: patch.emoji !== undefined ? patch.emoji : list.emoji,
                         categoryId: patch.categoryId !== undefined ? patch.categoryId : list.categoryId,
-                        updatedAt: now,
                     };
+                    return { ...list, ...safePatch, updatedAt: now };
                 }),
             );
+            setTimeout(() => syncListToDb(listId, { patch: safePatch }), 0);
         },
-        [persist],
+        [syncListToDb],
     );
 
+    // Deep link is now just the URL of the list because it auto joins others.
     const buildShareToken = useCallback(
         (listId: string) => {
-            const list = lists.find((entry) => entry.id === listId);
-            if (!list) return null;
-
-            const payload: SharePayload = {
-                title: list.title,
-                categoryId: list.categoryId,
-                emoji: list.emoji,
-                items: list.items.map((item) => ({
-                    description: item.description,
-                    quantity: item.quantity,
-                    unit: item.unit,
-                    completed: item.completed,
-                })),
-            };
-
-            return toBase64Url(JSON.stringify(payload));
+            // We just return the listId instead of a giant base64 string because DB handles access.
+            // When link is clicked, /list/:id will fetch from server and add them to sharedWith.
+            return listId;
         },
-        [lists],
+        [],
     );
 
+    // Kept to avoid breaking interface, though typically we just load /list/:id directly now.
     const importSharedList = useCallback(
         (token: string) => {
-            try {
-                const parsed = JSON.parse(fromBase64Url(token)) as SharePayload;
-                if (!parsed?.title || !Array.isArray(parsed.items)) {
-                    return null;
-                }
-
-                const now = Date.now();
-                const imported: SharedList = {
-                    id: createId("list"),
-                    title: `${parsed.title} (Shared)`,
-                    categoryId: parsed.categoryId,
-                    emoji: parsed.emoji,
-                    createdAt: now,
-                    updatedAt: now,
-                    items: parsed.items.map((item) => ({
-                        id: createId("item"),
-                        description: item.description,
-                        quantity: item.quantity,
-                        unit: item.unit,
-                        completed: Boolean(item.completed),
-                        createdAt: now,
-                        completedAt: item.completed ? now : undefined,
-                    })),
-                };
-
-                persist((previous) => [imported, ...previous]);
-                return imported;
-            } catch {
-                return null;
-            }
+            // with new DB logic, importing is just opening the list detail page which fetches it.
+            return null;
         },
-        [persist],
+        [],
     );
 
     const value = useMemo<ListsContextValue>(
@@ -411,6 +432,7 @@ export function ListsProvider({ children }: { children: ReactNode }) {
             createListWithItems,
             createFromTemplate,
             getListById,
+            fetchListAndJoin,
             addItem,
             toggleItem,
             deleteItem,
@@ -428,6 +450,7 @@ export function ListsProvider({ children }: { children: ReactNode }) {
             createListWithItems,
             createFromTemplate,
             getListById,
+            fetchListAndJoin,
             addItem,
             toggleItem,
             deleteItem,

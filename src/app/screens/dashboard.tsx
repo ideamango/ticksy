@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import { categories } from "../data/templates";
 import { formatLastUpdated, useLists } from "../context/list-context";
 import { ThemeToggle } from "../components/theme-toggle";
+import { LoginStatusButton } from "../components/login-status-button";
 import type { CategoryId } from "../types";
 
 export function Dashboard() {
@@ -23,13 +24,9 @@ export function Dashboard() {
       return;
     }
 
-    const imported = importSharedList(importToken);
-    if (imported) {
-      toast.success("Shared list imported. You can now update and re-share it.");
-      navigate(`/list/${imported.id}`, { replace: true });
-    } else {
-      toast.error("Could not import this shared list link.");
-    }
+    // With the new DB logic, we just navigate to the list detail page which will fetch and join it.
+    toast.success("Opening shared list...");
+    navigate(`/list/${importToken}`, { replace: true });
 
     const nextParams = new URLSearchParams(searchParams);
     nextParams.delete("import");
@@ -77,6 +74,7 @@ export function Dashboard() {
               <Bell className="w-5 h-5" />
             </button>
             <ThemeToggle />
+            <LoginStatusButton />
           </div>
         </div>
 

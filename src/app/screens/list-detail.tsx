@@ -1,13 +1,14 @@
-import { useMemo, useState } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { motion } from "motion/react";
 import { useNavigate, useParams } from "react-router";
-import { ChevronLeft, Share2, MoreVertical, Plus, Edit2, Trash2 } from "lucide-react";
+import { ChevronLeft, Share2, MoreVertical, Plus, PlusCircle, Edit2, Trash2 } from "lucide-react";
 import { ListItem } from "../components/list-item";
 import { ListCard } from "../components/list-card";
 import { ShareModal } from "../components/share-modal";
 import { ReuseListModal } from "../components/reuse-list-modal";
 import { EditListModal } from "../components/edit-list-modal";
 import { DeleteListModal } from "../components/delete-list-modal";
+import { CreateListModal } from "../components/create-list-modal";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -17,14 +18,15 @@ import {
 import confetti from "canvas-confetti";
 import { toast } from "sonner";
 import { categories, unitOptions } from "../data/templates";
-import type { Unit } from "../types";
+import type { CategoryId, Unit } from "../types";
 import { formatLastUpdated, useLists } from "../context/list-context";
 import { ThemeToggle } from "../components/theme-toggle";
+import { LoginStatusButton } from "../components/login-status-button";
 
 export function ListDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { getListById, addItem, toggleItem, deleteItem, buildShareToken, updateItem, createListWithItems, deleteList, lists } = useLists();
+  const { getListById, fetchListAndJoin, addItem, toggleItem, deleteItem, buildShareToken, updateItem, createList, createListWithItems, deleteList, lists } = useLists();
   const [newItemName, setNewItemName] = useState("");
   const [newItemQuantity, setNewItemQuantity] = useState("");
   const [newItemUnit, setNewItemUnit] = useState(unitOptions[0]);
@@ -32,8 +34,15 @@ export function ListDetail() {
   const [isReuseModalOpen, setIsReuseModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
   const list = id ? getListById(id) : undefined;
+
+  useEffect(() => {
+    if (id) {
+      fetchListAndJoin(id);
+    }
+  }, [id, fetchListAndJoin]);
 
   const completedCount = list?.items.filter((item) => item.completed).length ?? 0;
   const totalCount = list?.items.length ?? 0;
@@ -100,8 +109,14 @@ export function ListDetail() {
     }
   };
 
+  const handleCreateList = (name: string, categoryId: CategoryId, emoji: string) => {
+    const created = createList(name, categoryId, emoji);
+    setIsCreateModalOpen(false);
+    navigate(`/list/${created.id}`);
+  };
+
   const token = list ? buildShareToken(list.id) : null;
-  const baseUrl = window.location.hostname === 'localhost' ? 'https://ticksy-30bfa.web.app' : window.location.origin;
+  const baseUrl = window.location.origin;
   const shareLink = token
     ? `${baseUrl}/?import=${token}`
     : window.location.href;
@@ -155,6 +170,16 @@ export function ListDetail() {
 
               <div className="flex gap-2">
                 <ThemeToggle />
+                <LoginStatusButton />
+                <motion.button
+                  onClick={() => setIsCreateModalOpen(true)}
+                  className="p-2 hover:bg-muted dark:hover:bg-level-2 rounded-full transition-colors"
+                  whileTap={{ scale: 0.9 }}
+                  title="Create new list"
+                  aria-label="Create new list"
+                >
+                  <PlusCircle className="w-5 h-5" />
+                </motion.button>
                 {list && (
                   <>
                     <motion.button
@@ -164,7 +189,7 @@ export function ListDetail() {
                     >
                       <Share2 className="w-5 h-5" />
                     </motion.button>
-                     <motion.button
+                    <motion.button
                       onClick={() => setIsReuseModalOpen(true)}
                       className="p-2 hover:bg-white/50 rounded-full transition-colors"
                       whileTap={{ scale: 0.9 }}
@@ -206,24 +231,35 @@ export function ListDetail() {
 
         {/* Main grid: left lists sidebar + right detail */}
         <div className="relative z-20 grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-6 px-0 pb-12 sm:pb-16">
-          <aside className={`-ml-1 ${list ? 'hidden lg:block' : 'block w-full'}`}>
-            {/* Sidebar lists (scrollable) */}
-            <div className="max-h-[calc(100vh-8rem)] overflow-auto space-y-3 pl-1 pr-4 py-2 custom-scrollbar">
-              {/** Render small list overview so users can switch lists on wide screens */}
-              {lists.map((l, idx) => (
-                <ListCard
-                  key={l.id}
-                  id={l.id}
-                  title={`${l.title} ${l.emoji ?? ""}`.trim()}
-                  category={categories.find((c) => c.id === l.categoryId)?.label ?? "Other"}
-                  completed={l.items.filter((it) => it.completed).length}
-                  total={l.items.length}
-                  lastUpdated={formatLastUpdated(l.updatedAt)}
-                  index={idx}
-                  active={l.id === id}
-                  compact
-                />
-              ))}
+          <aside className={`${list ? 'hidden lg:block' : 'block w-full'} min-w-0`}>
+            <div className="h-[calc(100vh-8rem)] min-h-0 px-2 lg:px-0 lg:pr-4 pt-2 pb-[calc(5rem+env(safe-area-inset-bottom))] lg:pb-8 flex flex-col overflow-x-hidden">
+              {/* Sidebar lists (scrollable) */}
+              <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden space-y-3 custom-scrollbar pr-1">
+                {/** Render small list overview so users can switch lists on wide screens */}
+                {lists.map((l, idx) => (
+                  <ListCard
+                    key={l.id}
+                    id={l.id}
+                    title={`${l.title} ${l.emoji ?? ""}`.trim()}
+                    category={categories.find((c) => c.id === l.categoryId)?.label ?? "Other"}
+                    completed={l.items.filter((it) => it.completed).length}
+                    total={l.items.length}
+                    lastUpdated={formatLastUpdated(l.updatedAt)}
+                    index={idx}
+                    active={l.id === id}
+                    compact
+                  />
+                ))}
+              </div>
+
+              <motion.button
+                onClick={() => setIsCreateModalOpen(true)}
+                className="mt-4 w-full py-3 px-4 rounded-xl bg-foreground text-background font-semibold transition-opacity hover:opacity-90 flex items-center justify-center gap-2 shadow-lg shrink-0"
+                whileTap={{ scale: 0.98 }}
+              >
+                <Plus className="w-4 h-4" />
+                New List
+              </motion.button>
             </div>
           </aside>
 
@@ -287,7 +323,7 @@ export function ListDetail() {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="bg-card dark:backdrop-blur-xl border border-border focus-within:border-foreground/50 rounded-xl p-1.5 flex items-center transition-all"
+              className="bg-card dark:backdrop-blur-xl border-2 border-border/90 focus-within:border-foreground/70 rounded-xl p-1.5 flex items-center transition-all"
             >
               <input
                 type="text"
@@ -347,6 +383,12 @@ export function ListDetail() {
           </div>
         </div>
       )}
+
+      <CreateListModal
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+        onCreate={handleCreateList}
+      />
 
       {list && (
         <>
