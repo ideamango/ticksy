@@ -161,6 +161,12 @@ export function Dashboard() {
               <p className="text-slate-500 dark:text-muted-foreground mb-6 max-w-sm mx-auto">
                 Create your first list or browse templates to get started!
               </p>
+              <button
+                onClick={() => setIsCreateModalOpen(true)}
+                className="px-6 py-3 bg-highlight text-highlight-foreground font-bold rounded-xl hover:opacity-90 transition-opacity"
+              >
+                + Create New List
+              </button>
             </motion.div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4 pb-20 sm:pb-4 border-t border-border mt-2 pt-4">
@@ -182,15 +188,7 @@ export function Dashboard() {
         </div>
       </div>
 
-      {/* Mobile Floating Action Button (Optional) */}
-      <div className="md:hidden fixed bottom-20 right-6 z-50">
-        <button
-          onClick={() => setIsCreateModalOpen(true)}
-          className="w-16 h-16 bg-highlight text-highlight-foreground hover:bg-highlight/90 rounded-xl flex items-center justify-center shadow-2xl active:scale-95 transition-all backdrop-blur-md border border-border/20"
-        >
-          <PlusCircle className="w-8 h-8" strokeWidth={3} />
-        </button>
-      </div>
+
 
       <CreateListModal
         isOpen={isCreateModalOpen}

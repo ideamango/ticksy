@@ -26,7 +26,7 @@ function parseEnvelope<T>(data: unknown): T | null {
 
 export async function kvGet<T>(key: string): Promise<T | null> {
     try {
-        const res = await fetch(`${KV_BASE}/${encodeURIComponent(key)}`, {
+        const res = await fetch(`${KV_BASE}/${key}`, {
             headers: { accept: "application/json" },
         });
         if (res.status === 404) return null;
@@ -41,8 +41,8 @@ export async function kvGet<T>(key: string): Promise<T | null> {
 
 export async function kvPut<T>(key: string, value: T): Promise<void> {
     try {
-        const res = await fetch(`${KV_BASE}/${encodeURIComponent(key)}`, {
-            method: "PUT",
+        const res = await fetch(`${KV_BASE}`, {
+            method: "POST",
             headers: {
                 "Content-Type": "application/json",
                 accept: "application/json",

@@ -8,7 +8,6 @@ import { toast } from "sonner";
 import { categories } from "../data/templates";
 import { formatLastUpdated, useLists } from "../context/list-context";
 import { ThemeToggle } from "../components/theme-toggle";
-import { LoginStatusButton } from "../components/login-status-button";
 import type { CategoryId } from "../types";
 
 export function ClassicDashboard() {
@@ -59,7 +58,7 @@ export function ClassicDashboard() {
       </svg>
 
       {/* Top App Bar with Theme Surface */}
-      <div className="bg-background/80 dark:bg-level-1/80 px-6 pt-6 sm:pt-8 pb-6 rounded-b-xl sticky top-0 z-20 backdrop-blur-xl mb-6 flex flex-col items-center sm:items-start text-center sm:text-left border-b border-border font-sans">
+      <div className="bg-gradient-to-br from-primary/10 via-secondary/10 to-accent/10 px-6 pt-6 sm:pt-8 pb-6 rounded-b-[3rem] sticky top-0 z-20 backdrop-blur-xl mb-6 flex flex-col items-center sm:items-start text-center sm:text-left border-b border-border/60 font-sans min-h-[108px] sm:min-h-[124px]">
         <div className="max-w-4xl mx-auto w-full flex flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <div className="p-2 sm:p-2.5 rounded-xl bg-highlight shadow-sm">
@@ -79,7 +78,6 @@ export function ClassicDashboard() {
                 <Bell className="w-5 h-5" />
               </button>
               <ThemeToggle />
-              <LoginStatusButton />
             </div>
           </div>
         </div>
@@ -210,6 +208,12 @@ export function ClassicDashboard() {
             <p className="text-slate-500 dark:text-muted-foreground mb-6 max-w-sm mx-auto">
               Create your first list or browse templates to get started!
             </p>
+            <button
+              onClick={() => setIsCreateModalOpen(true)}
+              className="px-6 py-3 bg-highlight text-highlight-foreground font-bold rounded-xl hover:opacity-90 transition-opacity"
+            >
+              + Create New List
+            </button>
           </motion.div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4 pb-20 sm:pb-4">
@@ -236,15 +240,7 @@ export function ClassicDashboard() {
       Instead of returning the old bottom bar which duplicates, I'll let the user's focus stay on the hero we just built.
       */}
 
-      {/* Mobile Floating Action Button (Optional) */}
-      <div className="md:hidden fixed bottom-20 right-6 z-50">
-        <button
-          onClick={() => setIsCreateModalOpen(true)}
-          className="w-16 h-16 bg-highlight text-highlight-foreground hover:bg-highlight/90 rounded-xl flex items-center justify-center shadow-2xl active:scale-95 transition-all backdrop-blur-md border border-border/20"
-        >
-          <PlusCircle className="w-8 h-8" strokeWidth={3} />
-        </button>
-      </div>
+
 
       <CreateListModal
         isOpen={isCreateModalOpen}

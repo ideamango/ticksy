@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect } from "react";
 import { motion } from "motion/react";
 import { useNavigate, useParams } from "react-router";
-import { ChevronLeft, Share2, MoreVertical, Plus, PlusCircle, Edit2, Trash2 } from "lucide-react";
+import { ChevronLeft, Share2, MoreVertical, Plus, Edit2, Trash2 } from "lucide-react";
 import { ListItem } from "../components/list-item";
 import { ListCard } from "../components/list-card";
 import { ShareModal } from "../components/share-modal";
@@ -21,12 +21,12 @@ import { categories, unitOptions } from "../data/templates";
 import type { CategoryId, Unit } from "../types";
 import { formatLastUpdated, useLists } from "../context/list-context";
 import { ThemeToggle } from "../components/theme-toggle";
-import { LoginStatusButton } from "../components/login-status-button";
+import { ReuseCircularIcon } from "../components/icons/reuse-circular-icon";
 
 export function ListDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { getListById, fetchListAndJoin, addItem, toggleItem, deleteItem, buildShareToken, updateItem, createList, createListWithItems, deleteList, lists, setFocusedListId } = useLists();
+  const { getListById, fetchListAndJoin, addItem, toggleItem, deleteItem, buildShareToken, updateItem, createList, createListWithItems, deleteList, lists } = useLists();
   const [newItemName, setNewItemName] = useState("");
   const [newItemQuantity, setNewItemQuantity] = useState("");
   const [newItemUnit, setNewItemUnit] = useState(unitOptions[0]);
@@ -38,14 +38,13 @@ export function ListDetail() {
 
   const list = id ? getListById(id) : undefined;
   const hasLists = lists.length > 0;
+  const isListsIndexView = hasLists && !list;
 
   useEffect(() => {
     if (id) {
       fetchListAndJoin(id);
-      setFocusedListId(id);
     }
-    return () => setFocusedListId(null);
-  }, [id, fetchListAndJoin, setFocusedListId]);
+  }, [id, fetchListAndJoin]);
 
   const completedCount = list?.items.filter((item) => item.completed).length ?? 0;
   const totalCount = list?.items.length ?? 0;
@@ -61,6 +60,7 @@ export function ListDetail() {
   }, [list]);
 
   const categoryLabel = list ? (categories.find((category) => category.id === list.categoryId)?.label ?? "Other") : "";
+  const headerSubtitle = list ? categoryLabel : "Manage and switch your shared lists.";
 
   const handleToggleItem = (itemId: string) => {
     if (!list) return;
@@ -121,16 +121,21 @@ export function ListDetail() {
   const token = list ? buildShareToken(list.id) : null;
   const baseUrl = window.location.origin;
   const shareLink = token
-    ? `${baseUrl}/list/${token}`
+    ? `${baseUrl}/?import=${token}`
     : window.location.href;
 
   return (
-    <div className="min-h-screen bg-background dark:bg-level-1 pb-40 transition-colors duration-300">
-      <div className="max-w-7xl mx-auto px-6 lg:px-8">
+    <div
+      className={`${isListsIndexView
+        ? "h-full overflow-hidden pb-0 lg:min-h-screen lg:overflow-visible lg:pb-40"
+        : "min-h-screen pb-40"
+      } bg-background dark:bg-level-1 transition-colors duration-300`}
+    >
+      <div className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 ${isListsIndexView ? "h-full flex flex-col" : ""}`}>
         {/* Header */}
-        <div className="bg-card dark:bg-level-2/95 px-4 sm:px-6 pt-6 sm:pt-8 pb-4 sm:pb-6 rounded-b-xl sticky top-0 z-30 backdrop-blur-xl mb-6 border-b border-border shadow-md">
+        <div className="bg-gradient-to-br from-primary/10 via-secondary/10 to-accent/10 px-6 pt-6 sm:pt-8 pb-6 rounded-b-[3rem] sticky top-0 z-20 backdrop-blur-xl mb-6 border-b border-border/60 shadow-md font-sans min-h-[108px] sm:min-h-[124px]">
           <div className="flex flex-row items-center justify-between gap-2 mb-0">
-            <div className="flex items-center gap-2 sm:gap-4 flex-1 min-w-0">
+            <div className="flex items-center gap-3 sm:gap-4 flex-1 min-w-0">
               <motion.button
                 onClick={() => {
                   if (list) {
@@ -146,10 +151,10 @@ export function ListDetail() {
               </motion.button>
 
               <div className="min-w-0 flex-1 flex flex-col justify-center">
-                <h2 className="mb-0 text-lg sm:text-3xl font-extrabold block w-full leading-tight line-clamp-2 sm:truncate">
+                <h2 className="mb-0 text-xl sm:text-3xl font-extrabold block w-full leading-tight line-clamp-2 sm:truncate">
                   {list ? `${list.title} ${list.emoji ?? ""}`.trim() : "Lists"}
                 </h2>
-                {list && <p className="text-xs sm:text-base text-muted-foreground truncate block w-full leading-snug">{categoryLabel}</p>}
+                <p className="text-[10px] sm:text-sm text-muted-foreground font-medium truncate block w-full leading-snug">{headerSubtitle}</p>
               </div>
             </div>
 
@@ -173,31 +178,23 @@ export function ListDetail() {
 
               <div className="flex gap-2">
                 <ThemeToggle />
-                <LoginStatusButton />
-                <motion.button
-                  onClick={() => setIsCreateModalOpen(true)}
-                  className="p-2 hover:bg-muted dark:hover:bg-level-2 rounded-full transition-colors"
-                  whileTap={{ scale: 0.9 }}
-                  title="Create new list"
-                  aria-label="Create new list"
-                >
-                  <PlusCircle className="w-5 h-5" />
-                </motion.button>
                 {list && (
                   <>
                     <motion.button
                       onClick={() => setIsShareModalOpen(true)}
-                      className="p-2 hover:bg-white/50 rounded-full transition-colors"
+                      className="p-2 hover:bg-muted/60 rounded-full transition-colors"
                       whileTap={{ scale: 0.9 }}
                     >
                       <Share2 className="w-5 h-5" />
                     </motion.button>
                     <motion.button
                       onClick={() => setIsReuseModalOpen(true)}
-                      className="p-2 hover:bg-white/50 rounded-full transition-colors"
+                      className="p-2 hover:bg-muted dark:hover:bg-level-2 rounded-full transition-colors"
                       whileTap={{ scale: 0.9 }}
+                      title="Reuse list"
+                      aria-label="Reuse list"
                     >
-                      ♻️
+                      <ReuseCircularIcon className="w-5 h-5 text-foreground" />
                     </motion.button>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
@@ -233,12 +230,12 @@ export function ListDetail() {
         </div>
 
         {/* Main grid: left lists sidebar + right detail */}
-        <div className={`relative z-20 grid grid-cols-1 ${hasLists ? 'lg:grid-cols-[280px_1fr]' : ''} gap-6 px-0 pb-12 sm:pb-16`}>
+        <div className={`relative z-20 grid grid-cols-1 ${hasLists ? 'lg:grid-cols-[280px_1fr]' : ''} gap-6 px-0 pb-12 sm:pb-16 ${isListsIndexView ? 'flex-1 min-h-0 pb-0 sm:pb-0' : ''}`}>
           {hasLists && (
-          <aside className={`${list ? 'hidden lg:block' : 'block w-full'} min-w-0`}>
-            <div className="h-[calc(100vh-8rem)] min-h-0 px-2 lg:px-0 lg:pr-4 pt-2 pb-[calc(5rem+env(safe-area-inset-bottom))] lg:pb-8 flex flex-col overflow-x-hidden">
+          <aside className={`${list ? 'hidden lg:block' : 'block w-full'} min-w-0 lg:sticky lg:top-24 lg:self-start`}>
+            <div className={`min-h-0 px-2 lg:px-0 lg:pr-4 pt-2 pb-[calc(5rem+env(safe-area-inset-bottom))] lg:pb-8 flex flex-col overflow-x-hidden ${isListsIndexView ? 'h-full lg:h-[calc(100vh-10rem)]' : 'h-[calc(100vh-10rem)]'}`}>
               {/* Sidebar lists (scrollable) */}
-              <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden space-y-3 custom-scrollbar pr-1">
+              <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden space-y-3 custom-scrollbar pr-1 pb-[calc(5rem+env(safe-area-inset-bottom))] lg:pb-0">
                 {/** Render small list overview so users can switch lists on wide screens */}
                 {lists.map((l, idx) => (
                   <ListCard
@@ -258,7 +255,7 @@ export function ListDetail() {
 
               <motion.button
                 onClick={() => setIsCreateModalOpen(true)}
-                className="mt-4 w-full py-3 px-4 rounded-xl bg-foreground text-background font-semibold transition-opacity hover:opacity-90 flex items-center justify-center gap-2 shadow-lg shrink-0"
+                className="mt-4 w-full py-3 px-4 rounded-xl bg-foreground text-background font-semibold transition-opacity hover:opacity-90 hidden lg:flex items-center justify-center gap-2 shadow-lg shrink-0"
                 whileTap={{ scale: 0.98 }}
               >
                 <Plus className="w-4 h-4" />
@@ -338,6 +335,22 @@ export function ListDetail() {
           </main>
         </div>
       </div>
+
+      {/* Mobile/Tablet fixed New List button for /lists view */}
+      {hasLists && !list && (
+        <div className="fixed left-0 right-0 bottom-16 md:left-16 md:bottom-4 z-40 px-4 sm:px-6 lg:hidden pointer-events-none">
+          <div className="max-w-7xl mx-auto pointer-events-auto">
+            <motion.button
+              onClick={() => setIsCreateModalOpen(true)}
+              className="w-full py-3 px-4 rounded-xl bg-foreground text-background font-semibold transition-opacity hover:opacity-90 flex items-center justify-center gap-2 shadow-lg"
+              whileTap={{ scale: 0.98 }}
+            >
+              <Plus className="w-4 h-4" />
+              New List
+            </motion.button>
+          </div>
+        </div>
+      )}
 
       {/* Fixed Bottom Add Item Bar */}
       {list && (

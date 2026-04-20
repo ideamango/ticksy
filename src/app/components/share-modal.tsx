@@ -1,6 +1,7 @@
 import { motion } from "motion/react";
 import { X, Link as LinkIcon, Copy, Check } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useState } from "react";
+import { APP_CONSTANTS } from "../constants";
 
 interface ShareModalProps {
   isOpen: boolean;
@@ -11,61 +12,15 @@ interface ShareModalProps {
 
 export function ShareModal({ isOpen, onClose, listName, shareLink }: ShareModalProps) {
   const [copied, setCopied] = useState(false);
-  const [shortLink, setShortLink] = useState<string | null>(null);
-  const [isShortening, setIsShortening] = useState(false);
 
-  const effectiveShareLink = shortLink ?? shareLink;
+  const shareMessageText = APP_CONSTANTS.SHARE_MESSAGE_TEMPLATE
+    .replace("{listName}", listName)
+    .replace("{url}", shareLink);
 
-  useEffect(() => {
-    if (!isOpen || !shareLink) return;
-
-    const controller = new AbortController();
-
-    const shortenLink = async () => {
-      setIsShortening(true);
-      setShortLink(null);
-
-      try {
-        const response = await fetch(
-          `https://tinyurl.com/api-create.php?url=${encodeURIComponent(shareLink)}`,
-          { signal: controller.signal },
-        );
-
-        if (!response.ok) {
-          throw new Error("TinyURL request failed");
-        }
-
-        const tinyUrl = (await response.text()).trim();
-        if (tinyUrl.startsWith("http://") || tinyUrl.startsWith("https://")) {
-          setShortLink(tinyUrl);
-        }
-      } catch {
-        // Fall back to the original link when shortening is unavailable.
-      } finally {
-        if (!controller.signal.aborted) {
-          setIsShortening(false);
-        }
-      }
-    };
-
-    void shortenLink();
-
-    return () => {
-      controller.abort();
-    };
-  }, [isOpen, shareLink]);
-
-  const compactLinkLabel = useMemo(() => {
-    if (isShortening && !shortLink) return "Creating short link...";
-    return effectiveShareLink;
-  }, [effectiveShareLink, isShortening, shortLink]);
-
-  const whatsappLink = `https://wa.me/?text=${encodeURIComponent(
-    `Here's our shared list: ${listName}\n${effectiveShareLink}`,
-  )}`;
+  const whatsappLink = `https://wa.me/?text=${encodeURIComponent(shareMessageText)}`;
 
   const handleCopy = async () => {
-    await navigator.clipboard.writeText(effectiveShareLink);
+    await navigator.clipboard.writeText(shareMessageText);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
@@ -77,13 +32,13 @@ export function ShareModal({ isOpen, onClose, listName, shareLink }: ShareModalP
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-50 p-4"
+      className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
       onClick={onClose}
     >
       <motion.div
-        initial={{ y: "100%", opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        exit={{ y: "100%", opacity: 0 }}
+        initial={{ scale: 0.9, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0.9, opacity: 0 }}
         transition={{ type: "spring", damping: 30, stiffness: 300 }}
         onClick={(e) => e.stopPropagation()}
         className="bg-card rounded-xl p-6 w-full max-w-md shadow-2xl"
@@ -109,14 +64,14 @@ export function ShareModal({ isOpen, onClose, listName, shareLink }: ShareModalP
           </div>
           <div className="flex-1 min-w-0">
             <p className="text-sm text-muted-foreground mb-1">Share link</p>
-            <p className="text-xs text-foreground/60 truncate">{compactLinkLabel}</p>
+            <p className="text-xs text-foreground/60 truncate">{shareLink}</p>
           </div>
         </div>
 
         <div className="bg-muted/50 rounded-2xl p-4 mb-4 overflow-hidden">
           <div className="overflow-x-auto">
             <p className="text-sm text-foreground font-mono whitespace-nowrap min-w-max">
-              {effectiveShareLink}
+              {shareLink}
             </p>
           </div>
         </div>
@@ -132,12 +87,12 @@ export function ShareModal({ isOpen, onClose, listName, shareLink }: ShareModalP
           {copied ? (
             <>
               <Check className="w-5 h-5" />
-              Copied!
+              Copied Message!
             </>
           ) : (
             <>
               <Copy className="w-5 h-5" />
-              Copy Link
+              Copy Message & Link
             </>
           )}
         </motion.button>

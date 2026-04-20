@@ -45,10 +45,17 @@ export function ReuseListModal({ isOpen, onClose, source, onCreateFromSelection 
 
     return (
         <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
             className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
             onClick={onClose}
         >
             <motion.div
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.9, opacity: 0 }}
+                transition={{ type: "spring", damping: 30, stiffness: 300 }}
                 className="bg-card dark:bg-level-3 rounded-xl p-6 w-full max-w-2xl shadow-2xl border border-border"
                 onClick={(e) => e.stopPropagation()}
             >

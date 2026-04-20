@@ -8,7 +8,7 @@
 
 ## Definition of done
 A user can 
-1. Create a list
+1. Create a list - name, qty, category   
 2. Reuse the list later
 3. Share it with others in short link
 4. Use templates to craete a list

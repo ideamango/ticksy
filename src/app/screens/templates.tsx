@@ -4,6 +4,7 @@ import { ChevronLeft, Copy } from "lucide-react";
 import { toast } from "sonner";
 import { categories, templates } from "../data/templates";
 import { useLists } from "../context/list-context";
+import { ThemeToggle } from "../components/theme-toggle";
 
 export function Templates() {
   const navigate = useNavigate();
@@ -24,57 +25,72 @@ export function Templates() {
       {/* Responsive container for desktop */}
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
         {/* Header */}
-        <div className="bg-gradient-to-br from-primary/10 via-secondary/10 to-accent/10 px-6 pt-8 pb-8 rounded-b-[3rem] sticky top-0 z-10">
-          <div className="flex items-center gap-4 mb-4">
+        <div className="bg-gradient-to-br from-primary/10 via-secondary/10 to-accent/10 px-6 pt-6 sm:pt-8 pb-6 rounded-b-[3rem] sticky top-0 z-20 backdrop-blur-xl mb-6 border-b border-border/60 shadow-md font-sans min-h-[108px] sm:min-h-[124px]">
+          <div className="flex items-center justify-between gap-4 w-full">
+            <div className="flex items-center gap-4 min-w-0 flex-1">
             <motion.button
               onClick={() => navigate("/")}
-              className="p-2 hover:bg-white/50 rounded-full transition-colors"
+              className="p-2 bg-background hover:bg-muted rounded-full transition-colors shrink-0 border border-border"
               whileTap={{ scale: 0.9 }}
             >
-              <ChevronLeft className="w-6 h-6" />
+              <ChevronLeft className="w-5 h-5" />
             </motion.button>
-            <h2>Templates</h2>
+
+              <div className="min-w-0 flex flex-col justify-center">
+                <h2 className="text-xl sm:text-3xl font-extrabold leading-tight truncate">Templates</h2>
+                <p className="text-[10px] sm:text-sm text-muted-foreground font-medium truncate leading-snug">
+                  Start with a ready-made list template
+                </p>
+              </div>
+            </div>
+
+            <div className="shrink-0">
+              <ThemeToggle />
+            </div>
           </div>
-          <p className="text-muted-foreground">
-            Start with a ready-made list template
-          </p>
         </div>
 
         {/* Templates Grid */}
         <div className="mt-6">
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-[repeat(auto-fit,minmax(240px,1fr))] gap-4 sm:gap-5 lg:gap-6 justify-items-center">
             {templates.map((template, index) => (
               <motion.div
                 key={template.id}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
-                className="bg-white rounded-3xl p-6 shadow-md hover:shadow-xl transition-all cursor-pointer group"
+                className="w-full min-h-[196px] max-w-[360px] sm:max-w-[400px] lg:max-w-[420px] rounded-3xl p-5 sm:p-6 border border-border bg-card text-foreground shadow-sm hover:shadow-md transition-all"
               >
-                <div className="mb-4">
-                  <div className="text-4xl mb-3">{template.emoji}</div>
-                  <h3 className="mb-1">{template.name}</h3>
-                  <p className="text-sm text-muted-foreground mb-2">
+                <div className="flex h-full flex-col">
+                  <div className="flex items-center gap-2 mb-2">
+                    <h3 className="truncate leading-tight">{template.name}</h3>
+                    <div className="text-2xl leading-none shrink-0">{template.emoji}</div>
+                  </div>
+                  <p className="text-sm text-muted-foreground line-clamp-2 min-h-10">
                     {template.description}
                   </p>
-                  <div className="flex items-center gap-2 text-xs">
-                    <span className="px-2 py-1 bg-primary/10 text-primary rounded-full">
-                      {categories.find((item) => item.id === template.categoryId)?.label ?? "Other"}
-                    </span>
-                    <span className="text-muted-foreground">
-                      {template.items.length} items
-                    </span>
+
+                  <div className="mt-auto flex items-center justify-between gap-3 pt-4">
+                    <div className="flex items-center gap-2 text-xs min-w-0">
+                      <span className="px-2.5 py-1 bg-primary/10 text-primary rounded-full truncate">
+                        {categories.find((item) => item.id === template.categoryId)?.label ?? "Other"}
+                      </span>
+                      <span className="text-muted-foreground shrink-0">
+                        {template.items.length} items
+                      </span>
+                    </div>
+
+                    <motion.button
+                      onClick={() => handleUseTemplate(template.id)}
+                      className="group/icon h-9 w-9 rounded-lg border border-border bg-background/70 text-foreground transition-all duration-200 flex items-center justify-center hover:scale-110 hover:text-primary hover:bg-primary/10"
+                      whileTap={{ scale: 0.95 }}
+                      title="Use template"
+                      aria-label={`Use ${template.name} template`}
+                    >
+                      <Copy className="w-4 h-4 transition-transform duration-200 group-hover/icon:scale-110" strokeWidth={2.2} />
+                    </motion.button>
                   </div>
                 </div>
-
-                <motion.button
-                  onClick={() => handleUseTemplate(template.id)}
-                  className="w-full py-3 px-4 rounded-2xl bg-primary text-primary-foreground font-semibold sm:opacity-0 sm:group-hover:opacity-100 transition-all flex items-center justify-center gap-2"
-                  whileTap={{ scale: 0.95 }}
-                >
-                  <Copy className="w-4 h-4" />
-                  Use Template
-                </motion.button>
               </motion.div>
             ))}
           </div>

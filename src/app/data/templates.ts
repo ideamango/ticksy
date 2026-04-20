@@ -91,7 +91,7 @@ export const defaultLists: SharedList[] = [
             },
             {
                 id: "item-3",
-                description: "Eggs",
+                description: "Eggs", 
                 quantity: "1",
                 unit: "dozen",
                 completed: false,
