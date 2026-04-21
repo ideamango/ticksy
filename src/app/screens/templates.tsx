@@ -1,14 +1,17 @@
-import { motion } from "motion/react";
+import { useState } from "react";
+import { motion, AnimatePresence } from "motion/react";
 import { useNavigate } from "react-router";
-import { ChevronLeft, Copy } from "lucide-react";
+import { ChevronLeft, Copy, Plus } from "lucide-react";
 import { toast } from "sonner";
 import { categories, templates } from "../data/templates";
 import { useLists } from "../context/list-context";
 import { ThemeToggle } from "../components/theme-toggle";
+import { InlineCreateTemplate } from "../components/inline-create-template";
 
 export function Templates() {
   const navigate = useNavigate();
-  const { createFromTemplate } = useLists();
+  const { createFromTemplate, customTemplates, createTemplate } = useLists();
+  const [isCreatingTemplate, setIsCreatingTemplate] = useState(false);
 
   const handleUseTemplate = (templateId: string) => {
     const created = createFromTemplate(templateId);
@@ -19,6 +22,14 @@ export function Templates() {
     toast.success(`Created list from "${created.title}" template`);
     navigate(`/list/${created.id}`);
   };
+
+  const handleCreateTemplate = (template: any) => {
+    createTemplate(template);
+    setIsCreatingTemplate(false);
+    toast.success("Template created successfully!");
+  };
+
+  const allTemplates = [...customTemplates, ...templates];
 
   return (
     <div className="min-h-screen bg-background pb-24">
@@ -53,7 +64,7 @@ export function Templates() {
         {/* Templates Grid */}
         <div className="mt-6">
           <div className="grid grid-cols-[repeat(auto-fit,minmax(240px,1fr))] gap-4 sm:gap-5 lg:gap-6 justify-items-center">
-            {templates.map((template, index) => (
+            {allTemplates.map((template, index) => (
               <motion.div
                 key={template.id}
                 initial={{ opacity: 0, y: 20 }}
@@ -96,25 +107,34 @@ export function Templates() {
           </div>
 
           {/* Custom Template Card */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: templates.length * 0.1 }}
-            className="mt-6 bg-gradient-to-br from-accent/20 to-secondary/20 rounded-3xl p-6 text-center"
-          >
-            <div className="text-4xl mb-3">✨</div>
-            <h3 className="mb-2">Create Your Own Template</h3>
-            <p className="text-sm text-muted-foreground mb-4">
-              Save any list as a reusable template
-            </p>
-            <motion.button
-              onClick={() => alert('Template creation coming soon!')}
-              className="px-6 py-2 rounded-2xl bg-primary text-primary-foreground font-semibold hover:bg-primary/80 transition-colors"
-              whileTap={{ scale: 0.95 }}
+          {!isCreatingTemplate ? (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: allTemplates.length * 0.1 }}
+              className="mt-6 bg-gradient-to-br from-accent/20 to-secondary/20 rounded-3xl p-6 text-center"
             >
-              Create New Template
-            </motion.button>
-          </motion.div>
+              <div className="text-4xl mb-3">✨</div>
+              <h3 className="mb-2">Create Your Own Template</h3>
+              <p className="text-sm text-muted-foreground mb-4">
+                Save any list as a reusable template
+              </p>
+              <motion.button
+                onClick={() => setIsCreatingTemplate(true)}
+                className="px-6 py-2 rounded-2xl bg-primary text-primary-foreground font-semibold hover:bg-primary/80 transition-colors inline-flex items-center gap-2"
+                whileTap={{ scale: 0.95 }}
+              >
+                <Plus className="w-5 h-5" /> Create New Template
+              </motion.button>
+            </motion.div>
+          ) : (
+            <div className="mt-6 max-w-2xl mx-auto">
+              <InlineCreateTemplate
+                onCancel={() => setIsCreatingTemplate(false)}
+                onCreate={handleCreateTemplate}
+              />
+            </div>
+          )}
         </div>
       </div>
     </div>

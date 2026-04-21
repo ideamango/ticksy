@@ -84,100 +84,119 @@ export function ClassicDashboard() {
       </div>
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6">
-        {/* Header Hero Banner */}
+        {/* Interactive Hero Banner */}
         <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="bg-card border border-border rounded-xl p-6 sm:p-8 shadow-sm mb-6 mt-2"
-        >
-          <div className="flex items-center gap-3 mb-3">
-            <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
-              Still texting grocery lists?
-            </h2>
-            <Receipt className="w-6 h-6 sm:w-8 sm:h-8" style={{ stroke: "url(#highlight-gradient)" }} />
-          </div>
-          <p className="text-muted-foreground text-base sm:text-lg leading-relaxed max-w-xl">
-            Make your own smart, shareable list — save time, avoid repeats, and shop stress-free.
-          </p>
-        </motion.div>
+           initial={{ opacity: 0, y: -20 }}
+           animate={{ opacity: 1, y: 0 }}
+           className="relative overflow-hidden bg-gradient-to-br from-card to-card/50 border border-border rounded-[2rem] p-6 sm:p-10 shadow-sm mb-12 mt-2 group"
+         >
+           {/* Animated gradient orbs for ambient background */}
+           <motion.div 
+              animate={{ rotate: 360, scale: [1, 1.1, 1] }} 
+              transition={{ duration: 20, repeat: Infinity, repeatType: "mirror", ease: "linear" }}
+              className="absolute -top-[20%] -right-[10%] w-[60%] h-[150%] bg-gradient-to-b from-highlight/10 to-[#C5A3FF]/10 blur-3xl pointer-events-none rounded-full"
+           />
+           <motion.div 
+              animate={{ rotate: -360, scale: [1, 1.2, 1] }} 
+              transition={{ duration: 25, repeat: Infinity, repeatType: "mirror", ease: "linear" }}
+              className="absolute -bottom-[20%] -left-[10%] w-[50%] h-[120%] bg-gradient-to-b from-[#E7A1B0]/10 to-highlight/5 blur-3xl pointer-events-none rounded-full"
+           />
+ 
+           <div className="relative z-10 flex flex-col md:flex-row items-center gap-8 md:gap-12">
+             
+             {/* Left side: Copy & Call-to-actions */}
+             <div className="flex-1 text-center md:text-left">
+               <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-highlight/10 text-highlight font-medium text-xs sm:text-sm mb-4">
+                 <Lightbulb className="w-4 h-4" /> The smarter way to list
+               </span>
+               
+               <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-foreground mb-4">
+                 Still texting <br className="hidden md:block" />
+                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FDCA8C] via-[#E7A1B0] to-[#C5A3FF]">grocery lists?</span>
+               </h2>
+               
+               <p className="text-muted-foreground text-sm sm:text-lg leading-relaxed max-w-xl md:max-w-md mx-auto md:mx-0">
+                 Create smart, live-syncing lists. Share effortlessly, avoid duplicates, and get template suggestions based on your past habits.
+               </p>
+               
+               <div className="mt-8 flex items-center justify-center md:justify-start gap-4">
+                  <button 
+                    onClick={() => setIsCreateModalOpen(true)} 
+                    className="w-14 h-14 md:w-auto md:h-auto md:px-6 md:py-3 bg-foreground text-background font-bold rounded-full md:rounded-xl hover:-translate-y-1 hover:shadow-lg transition-all flex items-center justify-center gap-2 shrink-0 shadow-md"
+                    aria-label="Create a New List"
+                  >
+                    <PlusCircle className="w-6 h-6 md:w-5 md:h-5"/> 
+                    <span className="hidden md:inline">Create a New List</span>
+                  </button>
+                  <button 
+                    onClick={() => navigate('/templates')} 
+                    className="flex-1 md:flex-none px-6 py-3 md:py-3 bg-card border border-border text-foreground font-bold rounded-full md:rounded-xl hover:-translate-y-1 hover:shadow-[0_4px_20px_var(--color-border)] transition-all flex items-center justify-center gap-2 shadow-sm"
+                  >
+                    <Recycle className="w-5 h-5"/> 
+                    <span className="hidden sm:inline">Browse Templates</span>
+                    <span className="inline sm:hidden">Templates</span>
+                  </button>
+               </div>
+             </div>
+ 
+             {/* Right side: Bento Box Feature Showcase */}
+             <div className="flex-1 w-full mt-10 md:mt-0 grid grid-cols-2 gap-3 sm:gap-4 max-w-sm mx-auto md:max-w-none">
+                
+                {/* Large Block */}
+                <motion.div 
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.1 }}
+                  whileHover={{ scale: 1.02 }}
+                  className="col-span-2 bg-gradient-to-br from-highlight/20 to-highlight/5 border border-highlight/20 rounded-[2rem] p-5 sm:p-6 flex flex-col justify-end relative overflow-hidden min-h-[150px] shadow-sm"
+                >
+                   <div className="absolute top-4 sm:top-6 right-4 sm:right-6 p-3 bg-background rounded-2xl shadow-sm z-10">
+                     <CheckSquare className="text-highlight w-6 h-6"/>
+                   </div>
+                   
+                   {/* Decorative background UI */}
+                   <div className="absolute top-6 left-6 right-24 space-y-2 opacity-40 pointer-events-none">
+                     <div className="h-3 w-3/4 bg-foreground/20 rounded-full"></div>
+                     <div className="h-3 w-1/2 bg-foreground/10 rounded-full"></div>
+                   </div>
 
-        {/* Feature Cards Grid (Compact on Mobile, 3 cols) */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.1 }}
-          className="grid grid-cols-3 gap-2 sm:gap-4 mb-8"
-        >
-          {/* Feature 1: Share */}
-          <button
-            onClick={() => toast.info("Check back soon to see lists shared with you directly!")}
-            className="bg-card rounded-xl sm:rounded-2xl p-2 sm:p-6 flex flex-col h-full border border-border text-center items-center shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 cursor-pointer group"
-          >
-            <h3 className="font-bold text-foreground text-[10px] sm:text-lg mb-1 sm:mb-2 leading-tight">
-              Share Lists
-            </h3>
-            <p className="text-[9px] sm:text-sm text-muted-foreground mb-2 sm:mb-6 flex-1 leading-tight line-clamp-3 sm:line-clamp-none">
-              Share effortlessly with a link
-            </p>
-            <div className="w-10 h-10 sm:w-20 sm:h-20 bg-muted/30 rounded-lg sm:rounded-xl flex items-center justify-center">
-              <Share2 className="w-5 h-5 sm:w-9 sm:h-9 text-[#E7A1B0]" strokeWidth={2.5} />
-            </div>
-          </button>
+                   <div className="relative z-10 mt-12">
+                     <h3 className="font-bold text-lg sm:text-xl text-foreground">Effortless Tracking</h3>
+                     <p className="text-sm text-muted-foreground mt-1 font-medium">Tick off your items instantly.</p>
+                   </div>
+                </motion.div>
 
-          {/* Feature 2: Existing Lists */}
-          <button
-            onClick={() => { const el = document.getElementById('your-lists'); el?.scrollIntoView({ behavior: 'smooth' }); }}
-            className="bg-card rounded-xl sm:rounded-2xl p-2 sm:p-6 flex flex-col h-full border border-border text-center items-center shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 cursor-pointer group"
-          >
-            <h3 className="font-bold text-foreground text-[10px] sm:text-lg mb-1 sm:mb-2 leading-tight">
-              Reuse Past Lists
-            </h3>
-            <p className="text-[9px] sm:text-sm text-muted-foreground mb-2 sm:mb-6 flex-1 leading-tight line-clamp-3 sm:line-clamp-none">
-              Stop rewriting the same items
-            </p>
-            <div className="w-10 h-10 sm:w-20 sm:h-20 bg-muted/30 rounded-lg sm:rounded-xl flex items-center justify-center">
-              <Recycle className="w-5 h-5 sm:w-9 sm:h-9 text-[#C5A3FF]" strokeWidth={2.5} />
-            </div>
-          </button>
+                {/* Small Block 1 */}
+                <motion.div 
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.2 }}
+                  whileHover={{ scale: 1.05 }}
+                  className="bg-card border border-border shadow-sm rounded-[2rem] p-5 flex flex-col items-center justify-center text-center gap-3 min-h-[150px]"
+                >
+                    <div className="relative flex -space-x-3 mb-1">
+                      <div className="w-12 h-12 rounded-full bg-[#E7A1B0] border-[3px] border-background flex items-center justify-center text-white font-black z-10 shadow-sm">U</div>
+                      <div className="w-12 h-12 rounded-full bg-[#C5A3FF] border-[3px] border-background flex items-center justify-center text-white font-black z-0 shadow-sm">S</div>
+                    </div>
+                    <span className="font-bold text-sm text-foreground">Live Synced</span>
+                </motion.div>
 
-          {/* Feature 3: Create New List */}
-          <button
-            onClick={() => setIsCreateModalOpen(true)}
-            className="bg-card rounded-xl sm:rounded-2xl p-2 sm:p-6 flex flex-col h-full border border-border text-center items-center shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 cursor-pointer group"
-          >
-            <h3 className="font-bold text-foreground text-[10px] sm:text-lg mb-1 sm:mb-2 leading-tight">
-              Create New List
-            </h3>
-            <p className="text-[9px] sm:text-sm text-muted-foreground mb-2 sm:mb-6 flex-1 leading-tight line-clamp-3 sm:line-clamp-none">
-              Start a fresh list right now
-            </p>
-            <div className="w-10 h-10 sm:w-20 sm:h-20 bg-muted/30 rounded-lg sm:rounded-xl flex items-center justify-center">
-              <PlusCircle className="w-5 h-5 sm:w-9 sm:h-9 text-[#FDCA8C]" strokeWidth={2.5} />
-            </div>
-          </button>
-        </motion.div>
-
-        {/* Smart Suggestions Card */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-          onClick={() => navigate('/templates')}
-          className="bg-card border border-border rounded-xl p-5 sm:p-6 cursor-pointer shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all mb-12 flex items-center gap-4 group"
-        >
-          <div className="w-12 h-12 bg-muted rounded-full flex items-center justify-center shrink-0">
-            <Lightbulb className="w-6 h-6 text-foreground" strokeWidth={2.5} />
-          </div>
-          <div className="flex-1">
-            <h3 className="font-bold text-lg text-foreground mb-1">Smart Suggestions</h3>
-            <p className="text-muted-foreground text-sm sm:text-base leading-snug">
-              Based on your past lists, we've got ideas on what you'll likely need next.
-            </p>
-          </div>
-          <div className="shrink-0 w-8 h-8 flex items-center justify-center rounded-full group-hover:translate-x-1 transition-transform">
-            <ChevronRight className="w-6 h-6 text-foreground" strokeWidth={2.5} />
-          </div>
-        </motion.div>
+                {/* Small Block 2 */}
+                <motion.div 
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.3 }}
+                  whileHover={{ scale: 1.05 }}
+                  className="bg-level-2 dark:bg-level-3 border border-border shadow-sm rounded-[2rem] p-5 flex flex-col items-center justify-center text-center gap-3 min-h-[150px]"
+                >
+                    <div className="p-3 bg-[#FDCA8C]/10 rounded-full mb-1">
+                      <History className="w-7 h-7 text-[#FDCA8C]"/>
+                    </div>
+                    <span className="font-bold text-sm text-foreground">Fast Reuse</span>
+                </motion.div>
+             </div>      
+           </div>
+         </motion.div>
 
         {/* User's Existing Lists section */}
         <motion.div

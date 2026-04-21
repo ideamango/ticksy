@@ -80,7 +80,7 @@ export function InlineCreateTemplate({ onCancel, onCreate }: InlineCreateTemplat
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="e.g., Weekly Workout"
-              className="w-full px-4 py-3 rounded-lg bg-background dark:bg-level-3 border border-border text-foreground outline-none focus:ring-2 focus:ring-ring transition-all"
+              className="w-full px-4 py-3 rounded-lg bg-background dark:bg-level-3 border border-border text-foreground outline-none focus:border-foreground focus:ring-1 focus:ring-foreground transition-all"
             />
           </div>
           <div>
@@ -90,7 +90,7 @@ export function InlineCreateTemplate({ onCancel, onCreate }: InlineCreateTemplat
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="e.g., Exercises for the gym"
-              className="w-full px-4 py-3 rounded-lg bg-background dark:bg-level-3 border border-border text-foreground outline-none focus:ring-2 focus:ring-ring transition-all"
+              className="w-full px-4 py-3 rounded-lg bg-background dark:bg-level-3 border border-border text-foreground outline-none focus:border-foreground focus:ring-1 focus:ring-foreground transition-all"
             />
           </div>
         </div>
@@ -134,7 +134,7 @@ export function InlineCreateTemplate({ onCancel, onCreate }: InlineCreateTemplat
                     value={item.description}
                     onChange={(e) => updateItem(item.id, e.target.value)}
                     placeholder={`Item ${index + 1}`}
-                    className="flex-1 px-4 py-3 rounded-lg bg-background dark:bg-level-3 border border-border text-foreground outline-none focus:ring-2 focus:ring-ring transition-all"
+                    className="flex-1 px-4 py-3 rounded-lg bg-background dark:bg-level-3 border border-border text-foreground outline-none focus:border-foreground focus:ring-1 focus:ring-foreground transition-all"
                     onKeyDown={(e) => {
                       if (e.key === "Enter" && item.description.trim()) {
                         addItem();

@@ -429,9 +429,90 @@
         "unit": "count",
         "completed": false,
         "createdAt": 1776774314612
+      },
+      {
+        "id": "item-1776785887942-2049",
+        "description": "fgdfg",
+        "quantity": "fgf",
+        "unit": "kg",
+        "completed": false,
+        "createdAt": 1776785887942
       }
     ],
     "createdAt": 1776774038226,
-    "updatedAt": 1776774314863
+    "updatedAt": 1776785888222
+  },
+  "list-1776775586276-8426": {
+    "listId": "list-1776775586276-8426",
+    "ownerId": "741f45c0-c3e6-4dc2-9a0c-061ad7f9bd9c",
+    "sharedWith": [],
+    "title": "ff",
+    "categoryId": "groceries",
+    "emoji": "🛒",
+    "items": [],
+    "createdAt": 1776775586522,
+    "updatedAt": 1776775586522,
+    "schemaVersion": 1
+  },
+  "list-1776775619928-9030": {
+    "schemaVersion": 1,
+    "listId": "list-1776775619928-9030",
+    "ownerId": "741f45c0-c3e6-4dc2-9a0c-061ad7f9bd9c",
+    "sharedWith": [],
+    "title": "ghgh",
+    "categoryId": "groceries",
+    "emoji": "🛒",
+    "items": [
+      {
+        "id": "item-1776775622635-9384",
+        "description": "ghgh",
+        "completed": true,
+        "createdAt": 1776775622635,
+        "completedAt": 1776775632388
+      },
+      {
+        "id": "item-1776775624419-5325",
+        "description": "gh",
+        "completed": true,
+        "createdAt": 1776775624419,
+        "completedAt": 1776775629941
+      },
+      {
+        "id": "item-1776775627649-1135",
+        "description": "gh",
+        "quantity": "6",
+        "unit": "count",
+        "completed": true,
+        "createdAt": 1776775627649,
+        "completedAt": 1776775631722
+      }
+    ],
+    "createdAt": 1776775620131,
+    "updatedAt": 1776775632498
+  },
+  "list-1776785997397-2838": {
+    "schemaVersion": 1,
+    "listId": "list-1776785997397-2838",
+    "ownerId": "TK58VX2M",
+    "sharedWith": [],
+    "title": "gh",
+    "categoryId": "tasks",
+    "emoji": "✅",
+    "items": [
+      {
+        "id": "item-1776785997397-509",
+        "description": "rth",
+        "completed": false,
+        "createdAt": 1776785997397
+      },
+      {
+        "id": "item-1776785997397-4096",
+        "description": "rt",
+        "completed": false,
+        "createdAt": 1776785997397
+      }
+    ],
+    "createdAt": 1776785997677,
+    "updatedAt": 1776785997677
   }
 }
