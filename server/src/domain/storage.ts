@@ -9,6 +9,7 @@ export interface StoredListItem {
 }
 
 export interface StoredList {
+    schemaVersion?: number;
     listId: string;
     ownerId: string;
     sharedWith: string[];
@@ -22,6 +23,7 @@ export interface StoredList {
 }
 
 export interface StoredUser {
+    schemaVersion?: number;
     userId: string;
     ownedListIds: string[];
     sharedListIds: string[];

@@ -25,7 +25,7 @@ export function AnimatedCheckbox({ checked, onChange, id }: AnimatedCheckboxProp
       id={id}
       onClick={handleChange}
       className={`
-        relative flex items-center justify-center w-7 h-7 rounded-full border-2 transition-all group-hover:border-foreground/60
+        relative flex items-center justify-center w-5 h-5 sm:w-[22px] sm:h-[22px] rounded-full border-2 transition-all group-hover:border-foreground/60
         ${
           checked
             ? "bg-foreground border-foreground shadow-[0_0_15px_rgba(255,255,255,0.1)]"
@@ -41,7 +41,7 @@ export function AnimatedCheckbox({ checked, onChange, id }: AnimatedCheckboxProp
           animate={{ scale: 1, rotate: 0 }}
           transition={{ type: "spring", stiffness: 500, damping: 30 }}
         >
-          <Check className="w-4 h-4 text-background" strokeWidth={4} />
+          <Check className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-background" strokeWidth={3} />
         </motion.div>
       )}
     </motion.button>

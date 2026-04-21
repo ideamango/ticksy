@@ -1,6 +1,6 @@
 import { motion, AnimatePresence } from "motion/react";
 import { AnimatedCheckbox } from "./animated-checkbox";
-import { Trash2, Edit2, MoreVertical } from "lucide-react";
+import { Trash2, Edit2, Check, X } from "lucide-react";
 import { useState, useRef, type MouseEvent } from "react";
 import { unitOptions } from "../data/templates";
 
@@ -31,20 +31,22 @@ export function ListItem({
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [editQuantity, setEditQuantity] = useState(quantity ?? "");
   const [editUnit, setEditUnit] = useState<string | undefined>(unit);
-  const [showMobileActions, setShowMobileActions] = useState(false);
+  const [isActionsOpen, setIsActionsOpen] = useState(false);
 
   const handleDelete = () => {
     setIsDeleting(true);
     setTimeout(() => {
       onDelete(id);
-    }, 300);
+    }, 250);
   };
 
   const startEditing = (e: MouseEvent) => {
     e.stopPropagation();
     setEditText(name);
+    setEditQuantity(quantity ?? "");
+    setEditUnit(unit);
     setIsEditing(true);
-    // focus next tick
+    setIsActionsOpen(false);
     setTimeout(() => inputRef.current?.focus(), 0);
   };
 
@@ -71,144 +73,167 @@ export function ListItem({
     <AnimatePresence>
       {!isDeleting && (
         <motion.div
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: -100 }}
+          initial={{ opacity: 0, y: -6 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, x: -60, height: 0, marginBottom: 0 }}
+          transition={{ duration: 0.2 }}
           layout
-          className={`
-            flex items-center gap-3 py-4 px-4 rounded-lg transition-all duration-300 group
-            ${completed 
-              ? "bg-muted dark:bg-level-1/50 opacity-60 scale-[0.98]" 
-              : "bg-card dark:backdrop-blur-sm border border-border shadow-sm hover:shadow-md hover:-translate-y-0.5"
-            }
-          `}
         >
-          <AnimatedCheckbox
-            checked={completed}
-            onChange={() => onToggle(id)}
-            id={`item-${id}`}
-          />
-
-          <div className="flex-1 min-w-0">
-            {isEditing ? (
-              <div className="space-y-2">
-                <input
-                  ref={inputRef}
-                  value={editText}
-                  onChange={(e) => setEditText(e.target.value)}
-                  onBlur={commitEdit}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") commitEdit();
-                    if (e.key === "Escape") cancelEdit();
-                  }}
-                  className="w-full px-3 py-2 rounded-lg border border-muted bg-white outline-none"
-                />
-                <div className="flex gap-2">
-                  <input
-                    value={editQuantity}
-                    onChange={(e) => setEditQuantity(e.target.value)}
-                    placeholder="Qty"
-                    className="w-24 px-2 py-1 rounded-lg border border-muted bg-white outline-none"
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") commitEdit();
-                    }}
-                  />
-                  <select
-                    value={editUnit}
-                    onChange={(e) => setEditUnit(e.target.value)}
-                    className="px-2 py-1 rounded-lg border border-muted bg-white outline-none"
-                  >
-                    <option value="">unit</option>
-                    {unitOptions.map((u) => (
-                      <option key={u} value={u}>
-                        {u}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-            ) : (
-              <div
-                className={`
-                  block transition-all select-text
-                  ${completed ? "line-through text-muted-foreground" : "text-foreground"}
-                `}
-              >
-                {name}
-              </div>
-            )}
-            {(quantity || unit) && (
-              <span className="text-sm text-muted-foreground">
-                {quantity} {unit}
-              </span>
-            )}
-          </div>
-
-          <div className="flex items-center gap-1 sm:gap-2 shrink-0">
-            {/* Mobile: show MoreVertical toggle */}
-            <motion.button
-              onClick={(e: MouseEvent) => {
-                e.stopPropagation();
-                setShowMobileActions(!showMobileActions);
-              }}
-              className="sm:hidden p-2 hover:bg-muted/50 rounded-full transition-colors"
-              whileTap={{ scale: 0.9 }}
-              aria-label="Actions"
+          {isEditing ? (
+            // ── Inline edit row ──────────────────────────────────────────
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="flex items-center gap-2 px-3 py-2 rounded-lg border border-foreground/30 bg-card shadow-sm mb-1"
             >
-              <MoreVertical className="w-4 h-4 text-muted-foreground" />
-            </motion.button>
+              <input
+                ref={inputRef}
+                value={editText}
+                onChange={(e) => setEditText(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") commitEdit();
+                  if (e.key === "Escape") cancelEdit();
+                }}
+                className="flex-1 min-w-0 bg-transparent outline-none text-sm font-medium text-foreground placeholder:text-muted-foreground"
+                placeholder="Item name…"
+              />
+              <input
+                value={editQuantity}
+                onChange={(e) => setEditQuantity(e.target.value)}
+                placeholder="Qty"
+                className="w-12 bg-transparent outline-none text-center text-sm text-muted-foreground border-l border-border pl-2"
+                onKeyDown={(e) => { if (e.key === "Enter") commitEdit(); }}
+              />
+              <select
+                value={editUnit ?? ""}
+                onChange={(e) => setEditUnit(e.target.value || undefined)}
+                className="bg-transparent outline-none text-sm text-muted-foreground border-l border-border pl-2 max-w-[70px]"
+              >
+                <option value="">unit</option>
+                {unitOptions.map((u) => (
+                  <option key={u} value={u}>{u}</option>
+                ))}
+              </select>
+              <button
+                onClick={commitEdit}
+                className="p-1.5 rounded-full bg-highlight text-highlight-foreground hover:opacity-90 transition-opacity shrink-0"
+                aria-label="Save"
+              >
+                <Check className="w-3.5 h-3.5" />
+              </button>
+              <button
+                onClick={cancelEdit}
+                className="p-1.5 rounded-full hover:bg-muted transition-colors shrink-0"
+                aria-label="Cancel"
+              >
+                <X className="w-3.5 h-3.5 text-muted-foreground" />
+              </button>
+            </motion.div>
+          ) : (
+            // ── Compact list row ─────────────────────────────────────────
+            <div
+              className={`
+                group flex items-center gap-2.5 px-3 py-2 rounded-lg transition-all duration-200
+                ${completed
+                  ? "opacity-50"
+                  : "hover:bg-muted/40 dark:hover:bg-level-2/60"
+                }
+              `}
+            >
+              <AnimatedCheckbox
+                checked={completed}
+                onChange={() => onToggle(id)}
+                id={`item-${id}`}
+              />
 
-            {/* Desktop: show on group hover | Mobile: show when toggled */}
-            <AnimatePresence>
-              {(showMobileActions || undefined) && (
-                <motion.div
-                  initial={{ opacity: 0, width: 0 }}
-                  animate={{ opacity: 1, width: "auto" }}
-                  exit={{ opacity: 0, width: 0 }}
-                  className="flex items-center gap-1 overflow-hidden sm:hidden"
+              {/* Name + qty badge */}
+              <div className="flex-1 min-w-0 flex items-center gap-2 overflow-hidden">
+                <span
+                  className={`
+                    text-sm font-medium leading-tight truncate transition-all
+                    ${completed ? "line-through text-muted-foreground" : "text-foreground"}
+                  `}
                 >
-                  {onEdit && (
-                    <motion.button
-                      onClick={startEditing}
-                      className="p-2 hover:bg-secondary/10 rounded-full"
-                      whileTap={{ scale: 0.9 }}
-                      aria-label="Edit"
-                    >
-                      <Edit2 className="w-4 h-4 text-foreground" />
-                    </motion.button>
-                  )}
-                  <motion.button
-                    onClick={handleDelete}
-                    className="p-2 hover:bg-destructive/10 rounded-full"
-                    whileTap={{ scale: 0.9 }}
-                  >
-                    <Trash2 className="w-4 h-4 text-destructive" />
-                    <span className="sr-only">Delete</span>
-                  </motion.button>
-                </motion.div>
-              )}
-            </AnimatePresence>
+                  {name}
+                </span>
+                {(quantity || unit) && (
+                  <span className="shrink-0 text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-muted text-muted-foreground leading-none">
+                    {[quantity, unit].filter(Boolean).join(" ")}
+                  </span>
+                )}
+              </div>
 
-            {/* Desktop hover actions */}
-            {onEdit && (
-              <motion.button
-                onClick={startEditing}
-                className="hidden sm:block opacity-0 group-hover:opacity-100 transition-opacity p-2 hover:bg-secondary/10 rounded-full"
-                whileTap={{ scale: 0.9 }}
-                aria-label="Edit"
-              >
-                <Edit2 className="w-4 h-4 text-foreground" />
-              </motion.button>
-            )}
-            <motion.button
-              onClick={handleDelete}
-              className="hidden sm:block opacity-0 group-hover:opacity-100 transition-opacity p-2 hover:bg-destructive/10 rounded-full"
-              whileTap={{ scale: 0.9 }}
-            >
-              <Trash2 className="w-4 h-4 text-destructive" />
-              <span className="sr-only">Delete</span>
-            </motion.button>
-          </div>
+              {/* Action buttons — desktop: appear on hover; mobile: toggle */}
+              <div className="flex items-center gap-0.5 shrink-0">
+                {/* Mobile toggle */}
+                <motion.button
+                  onClick={(e: MouseEvent) => {
+                    e.stopPropagation();
+                    setIsActionsOpen((v) => !v);
+                  }}
+                  className="sm:hidden p-1.5 hover:bg-muted rounded-full transition-colors text-muted-foreground"
+                  whileTap={{ scale: 0.85 }}
+                  aria-label="Actions"
+                >
+                  <svg className="w-3.5 h-3.5" viewBox="0 0 16 16" fill="currentColor">
+                    <circle cx="8" cy="3" r="1.2" />
+                    <circle cx="8" cy="8" r="1.2" />
+                    <circle cx="8" cy="13" r="1.2" />
+                  </svg>
+                </motion.button>
+
+                <AnimatePresence>
+                  {isActionsOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, width: 0 }}
+                      animate={{ opacity: 1, width: "auto" }}
+                      exit={{ opacity: 0, width: 0 }}
+                      className="flex items-center gap-0.5 overflow-hidden sm:hidden"
+                    >
+                      {onEdit && (
+                        <motion.button
+                          onClick={startEditing}
+                          whileTap={{ scale: 0.85 }}
+                          className="p-1.5 hover:bg-secondary/15 rounded-full transition-colors"
+                          aria-label="Edit"
+                        >
+                          <Edit2 className="w-3.5 h-3.5 text-foreground" />
+                        </motion.button>
+                      )}
+                      <motion.button
+                        onClick={handleDelete}
+                        whileTap={{ scale: 0.85 }}
+                        className="p-1.5 hover:bg-destructive/10 rounded-full transition-colors"
+                        aria-label="Delete"
+                      >
+                        <Trash2 className="w-3.5 h-3.5 text-destructive" />
+                      </motion.button>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
+                {/* Desktop hover actions */}
+                {onEdit && (
+                  <motion.button
+                    onClick={startEditing}
+                    whileTap={{ scale: 0.85 }}
+                    className="hidden sm:flex opacity-0 group-hover:opacity-100 transition-opacity p-1.5 hover:bg-secondary/15 rounded-full items-center justify-center"
+                    aria-label="Edit"
+                  >
+                    <Edit2 className="w-3.5 h-3.5 text-muted-foreground" />
+                  </motion.button>
+                )}
+                <motion.button
+                  onClick={handleDelete}
+                  whileTap={{ scale: 0.85 }}
+                  className="hidden sm:flex opacity-0 group-hover:opacity-100 transition-opacity p-1.5 hover:bg-destructive/10 rounded-full items-center justify-center"
+                  aria-label="Delete"
+                >
+                  <Trash2 className="w-3.5 h-3.5 text-destructive" />
+                </motion.button>
+              </div>
+            </div>
+          )}
         </motion.div>
       )}
     </AnimatePresence>

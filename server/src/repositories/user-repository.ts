@@ -1,5 +1,6 @@
 import { StoredUser } from "../domain/storage";
 import { KvClient } from "../lib/kv-client";
+import { normalizeStoredUser, STORAGE_SCHEMA_VERSION } from "../lib/storage-normalizers";
 
 function userKey(userId: string): string {
     return `user:${userId}`;
@@ -13,7 +14,14 @@ export class UserRepository {
     constructor(private readonly kvClient: KvClient) { }
 
     async getById(userId: string): Promise<StoredUser | null> {
-        return this.kvClient.get<StoredUser>(userKey(userId));
+        const rawUser = await this.kvClient.get<unknown>(userKey(userId));
+        const user = normalizeStoredUser(rawUser);
+
+        if (user && JSON.stringify(rawUser) !== JSON.stringify(user)) {
+            await this.save(user);
+        }
+
+        return user;
     }
 
     async ensure(userId: string): Promise<StoredUser> {
@@ -35,7 +43,10 @@ export class UserRepository {
     }
 
     async save(user: StoredUser): Promise<void> {
-        await this.kvClient.put(userKey(user.userId), user);
+        await this.kvClient.put(userKey(user.userId), {
+            ...user,
+            schemaVersion: STORAGE_SCHEMA_VERSION,
+        });
     }
 
     async addOwnedList(userId: string, listId: string): Promise<StoredUser> {

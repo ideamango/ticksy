@@ -61,7 +61,7 @@ export function UseTemplateModal({ isOpen, onClose, template, onCreate }: UseTem
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="w-full px-4 py-3 rounded-lg bg-[var(--modal-input-bg)] border border-border text-foreground outline-none focus:ring-2 focus:ring-ring transition-all"
+            className="w-full px-4 py-3 rounded-lg bg-[var(--modal-input-bg)] border border-border text-foreground outline-none focus:border-white/80 focus:ring-1 focus:ring-white/20 transition-colors"
             autoFocus
             onKeyDown={(e) => e.key === "Enter" && handleCreate()}
           />
@@ -71,7 +71,7 @@ export function UseTemplateModal({ isOpen, onClose, template, onCreate }: UseTem
           onClick={handleCreate}
           disabled={!name.trim()}
           className={`
-            w-full py-4 px-4 font-bold transition-all shadow-md mt-4
+            mt-4 w-full border border-white/50 py-4 px-4 font-bold transition-all shadow-md
             ${name.trim()
               ? "bg-highlight text-highlight-foreground"
               : "bg-muted text-muted-foreground cursor-not-allowed"

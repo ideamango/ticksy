@@ -1,0 +1,43 @@
+import { mkdir, readFile, writeFile } from 'node:fs/promises';
+import path from 'node:path';
+import sharp from 'sharp';
+
+const rootDir = process.cwd();
+const publicDir = path.join(rootDir, 'public');
+const svgPath = path.join(publicDir, 'pwa-icon.svg');
+
+const iconSpecs = [
+  { fileName: 'pwa-192x192.png', size: 192 },
+  { fileName: 'pwa-512x512.png', size: 512 },
+  { fileName: 'apple-touch-icon.png', size: 180 },
+  { fileName: 'favicon.png', size: 64 },
+];
+
+const sourceSvg = await readFile(svgPath);
+
+await mkdir(publicDir, { recursive: true });
+
+for (const icon of iconSpecs) {
+  const targetPath = path.join(publicDir, icon.fileName);
+  await sharp(sourceSvg)
+    .resize(icon.size, icon.size)
+    .png()
+    .toFile(targetPath);
+}
+
+const maskableSvg = `
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="512" height="512" rx="128" fill="#0F5C5C"/>
+  <rect x="162" y="150" width="20" height="106" rx="10" fill="#F9FAFB"/>
+  <rect x="204" y="166" width="126" height="20" rx="10" fill="#F9FAFB"/>
+  <rect x="204" y="224" width="148" height="20" rx="10" fill="#F9FAFB"/>
+  <rect x="242" y="282" width="110" height="20" rx="10" fill="#F9FAFB"/>
+  <path d="M173 298C183.494 287.506 200.506 287.506 211 298L239 326L324.908 222.092C335.402 211.598 352.414 211.598 362.908 222.092C373.402 232.586 373.402 249.598 362.908 260.092L257 366C246.506 376.494 229.494 376.494 219 366L173 320C162.506 309.506 162.506 292.494 173 282Z" fill="#F9FAFB"/>
+  <rect x="204" y="340" width="148" height="20" rx="10" fill="#F9FAFB" opacity="0.95"/>
+</svg>`;
+
+await writeFile(path.join(publicDir, 'maskable-icon.svg'), maskableSvg.trimStart(), 'utf8');
+await sharp(Buffer.from(maskableSvg))
+  .resize(512, 512)
+  .png()
+  .toFile(path.join(publicDir, 'maskable-icon-512x512.png'));

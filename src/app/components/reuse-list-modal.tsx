@@ -76,7 +76,7 @@ export function ReuseListModal({ isOpen, onClose, source, onCreateFromSelection 
                     <input
                         value={name}
                         onChange={(e) => setName(e.target.value)}
-                        className="w-full mt-2 px-3 py-2 rounded-lg border border-border bg-[var(--modal-input-bg)] text-foreground outline-none focus:ring-2 focus:ring-ring"
+                        className="w-full mt-2 px-3 py-2 rounded-lg border border-border bg-[var(--modal-input-bg)] text-foreground outline-none focus:border-white/80 focus:ring-1 focus:ring-white/20 transition-colors"
                     />
                 </div>
 
@@ -131,19 +131,19 @@ export function ReuseListModal({ isOpen, onClose, source, onCreateFromSelection 
                                     value={it.description}
                                     onChange={(e) => updateNewItem(idx, { description: e.target.value })}
                                     placeholder="Description"
-                                    className="flex-1 px-2 py-1.5 rounded-lg border border-border bg-[var(--modal-input-bg)] text-foreground outline-none focus:ring-1 focus:ring-ring text-sm"
+                                    className="flex-1 px-2 py-1.5 rounded-lg border border-border bg-[var(--modal-input-bg)] text-foreground outline-none focus:border-white/80 focus:ring-1 focus:ring-white/20 text-sm transition-colors"
                                 />
                                 <input
                                     value={it.quantity}
                                     onChange={(e) => updateNewItem(idx, { quantity: e.target.value })}
                                     placeholder="Qty"
-                                    className="w-20 px-2 py-1.5 rounded-lg border border-border bg-[var(--modal-input-bg)] text-foreground outline-none focus:ring-1 focus:ring-ring text-sm"
+                                    className="w-20 px-2 py-1.5 rounded-lg border border-border bg-[var(--modal-input-bg)] text-foreground outline-none focus:border-white/80 focus:ring-1 focus:ring-white/20 text-sm transition-colors"
                                 />
                                 <input
                                     value={it.unit}
                                     onChange={(e) => updateNewItem(idx, { unit: e.target.value })}
                                     placeholder="Unit"
-                                    className="w-24 px-2 py-1.5 rounded-lg border border-border bg-[var(--modal-input-bg)] text-foreground outline-none focus:ring-1 focus:ring-ring text-sm"
+                                    className="w-24 px-2 py-1.5 rounded-lg border border-border bg-[var(--modal-input-bg)] text-foreground outline-none focus:border-white/80 focus:ring-1 focus:ring-white/20 text-sm transition-colors"
                                 />
                                 {/* × icon instead of Remove button */}
                                 <button

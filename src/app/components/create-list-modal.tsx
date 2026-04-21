@@ -68,20 +68,18 @@ export function CreateListModal({ isOpen, onClose, onCreate }: CreateListModalPr
               className="w-1/2 h-full bg-highlight shadow-md rounded-full"
             />
           </div>
-          
+
           <button
             onClick={() => setActiveTab("new")}
-            className={`relative z-10 flex-1 py-1 text-sm font-bold transition-colors duration-200 ${
-              activeTab === "new" ? "text-highlight-foreground" : "text-muted-foreground hover:text-foreground"
-            }`}
+            className={`relative z-10 flex-1 py-1 text-sm font-bold transition-colors duration-200 ${activeTab === "new" ? "text-highlight-foreground" : "text-muted-foreground hover:text-foreground"
+              }`}
           >
             Create New
           </button>
           <button
             onClick={() => setActiveTab("existing")}
-            className={`relative z-10 flex-1 py-1 text-sm font-bold transition-colors duration-200 ${
-              activeTab === "existing" ? "text-highlight-foreground" : "text-muted-foreground hover:text-foreground"
-            }`}
+            className={`relative z-10 flex-1 py-1 text-sm font-bold transition-colors duration-200 ${activeTab === "existing" ? "text-highlight-foreground" : "text-muted-foreground hover:text-foreground"
+              }`}
           >
             Use Existing
           </button>
@@ -97,7 +95,7 @@ export function CreateListModal({ isOpen, onClose, onCreate }: CreateListModalPr
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="e.g., Weekly Grocery"
-                  className="w-full px-4 py-3 rounded-lg bg-[var(--modal-input-bg)] border border-border text-foreground outline-none focus:ring-2 focus:ring-ring transition-all"
+                  className="w-full px-4 py-3 rounded-lg bg-[var(--modal-input-bg)] border border-border text-foreground outline-none focus:border-white/80 focus:ring-1 focus:ring-white/20 transition-colors"
                   autoFocus
                   onKeyDown={(e) => e.key === "Enter" && handleCreate()}
                 />
@@ -130,7 +128,7 @@ export function CreateListModal({ isOpen, onClose, onCreate }: CreateListModalPr
                 onClick={handleCreate}
                 disabled={!name.trim()}
                 className={`
-                  w-full py-4 px-4 font-bold transition-all shadow-md mt-auto
+                  mt-auto w-full border border-white/50 py-4 px-4 font-bold transition-all shadow-md
                   ${name.trim()
                     ? "bg-highlight text-highlight-foreground"
                     : "bg-muted text-muted-foreground cursor-not-allowed"

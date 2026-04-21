@@ -70,7 +70,7 @@ export function EditListModal({ isOpen, onClose, list }: EditListModalProps) {
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="e.g., Weekly Grocery"
-            className="w-full px-4 py-3 rounded-lg bg-[var(--modal-input-bg)] border border-border text-foreground outline-none focus:ring-2 focus:ring-ring transition-all"
+            className="w-full px-4 py-3 rounded-lg bg-[var(--modal-input-bg)] border border-border text-foreground outline-none focus:border-white/80 focus:ring-1 focus:ring-white/20 transition-colors"
             autoFocus
             onKeyDown={(e) => e.key === "Enter" && handleSave()}
           />
@@ -85,10 +85,9 @@ export function EditListModal({ isOpen, onClose, list }: EditListModalProps) {
                 onClick={() => setSelectedCategory(category.id)}
                 className={`
                   p-3 rounded-xl border transition-all text-center
-                  ${
-                    selectedCategory === category.id
-                      ? "border-transparent bg-highlight text-highlight-foreground shadow-sm scale-105"
-                      : "border-border bg-background dark:bg-level-2 text-foreground"
+                  ${selectedCategory === category.id
+                    ? "border-transparent bg-highlight text-highlight-foreground shadow-sm scale-105"
+                    : "border-border bg-background dark:bg-level-2 text-foreground"
                   }
                 `}
                 whileTap={{ scale: 0.95 }}
@@ -105,10 +104,9 @@ export function EditListModal({ isOpen, onClose, list }: EditListModalProps) {
           disabled={!name.trim() || (name.trim() === list.title && selectedCategory === list.categoryId)}
           className={`
             w-full py-4 px-4 font-bold transition-all shadow-md mt-4
-            ${
-              name.trim() && (name.trim() !== list.title || selectedCategory !== list.categoryId)
-                ? "bg-highlight text-highlight-foreground"
-                : "bg-muted text-muted-foreground cursor-not-allowed"
+            ${name.trim() && (name.trim() !== list.title || selectedCategory !== list.categoryId)
+              ? "bg-highlight text-highlight-foreground"
+              : "bg-muted text-muted-foreground cursor-not-allowed"
             }
           `}
           style={{ borderRadius: "var(--btn-border-radius)" }}
