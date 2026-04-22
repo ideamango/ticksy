@@ -7,6 +7,7 @@ import { useState, useRef } from "react";
 import { useLists } from "../context/list-context";
 import { templates } from "../data/templates";
 import { toast } from "sonner";
+import { InstallPwaButton } from "../components/install-pwa-button";
 
 export function Profile() {
   const navigate = useNavigate();
@@ -204,6 +205,7 @@ export function Profile() {
               />
             </button>
           </div>
+          <InstallPwaButton variant="profile" />
         </motion.div>
       </div>
     </div>

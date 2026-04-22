@@ -2,6 +2,7 @@ import { motion } from "motion/react";
 import { ThemeToggle } from "./theme-toggle";
 import { CheckSquare, FileText, LayoutGrid, Bell, User } from "lucide-react";
 import { useNavigate } from "react-router";
+import { InstallPwaButton } from "./install-pwa-button";
 
 export function Sidebar() {
   const navigate = useNavigate();
@@ -34,6 +35,7 @@ export function Sidebar() {
         <button onClick={() => navigate("/profile")} className="p-3 text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-xl transition-all">
           <User className="w-5 h-5" />
         </button>
+        <InstallPwaButton variant="sidebar" />
       </div>
     </div>
   );

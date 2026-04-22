@@ -5,6 +5,7 @@ import { AppLayout } from "./components/app-layout";
 import { AuthProvider } from "./context/auth-context";
 import { ListsProvider } from "./context/list-context";
 import { ThemeProvider } from "next-themes";
+import { PwaPrompt } from "./components/pwa-prompt";
 
 export default function App() {
   return (
@@ -14,6 +15,7 @@ export default function App() {
           <ListsProvider>
             <RouterProvider router={router} />
             <Toaster />
+            <PwaPrompt />
           </ListsProvider>
         </AuthProvider>
       </AppLayout>
